@@ -24,13 +24,13 @@ const Nav = ({ header, socket }) => {
 	}, [socket]);
 
 	return (
-		<nav className="navbar">
+		<nav className="navbar flex justify-between items-center px-4 py-2 bg-gray-200">
 			<div className="header">
-				<h2>{header}</h2>
+				<h2 className="text-xl font-semibold">{header}</h2>
 			</div>
 
 			<div>
-				<p style={{ color: "red" }}>{notification}</p>
+				<p className="text-red-500">{notification}</p>
 			</div>
 		</nav>
 	);

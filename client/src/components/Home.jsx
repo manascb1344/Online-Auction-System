@@ -12,19 +12,26 @@ const Home = () => {
 	};
 
 	return (
-		<div>
-			<form className="home__form" onSubmit={handleSubmit}>
-				<label htmlFor="username">Enter your username</label>
+		<div className="font-poppins">
+			<form
+				className="w-full flex flex-col items-center"
+				onSubmit={handleSubmit}
+			>
+				<label htmlFor="username" className="mb-2">
+					Enter your username
+				</label>
 				<input
 					type="text"
 					name="username"
-					className="home__input"
 					value={userName}
 					onChange={(e) => setUserName(e.target.value)}
 					required
 					minLength={6}
+					className="w-80 px-4 py-2 rounded border border-gray-300 mb-4 outline-none"
 				/>
-				<button className="home__cta">SIGN IN</button>
+				<button className="w-40 px-4 py-2 text-white text-lg bg-green-500 rounded cursor-pointer">
+					SIGN IN
+				</button>
 			</form>
 		</div>
 	);

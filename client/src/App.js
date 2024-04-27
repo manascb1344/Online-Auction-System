@@ -5,6 +5,7 @@ import Products from "./components/Products";
 import { Route, Routes } from "react-router-dom";
 import socketIO from "socket.io-client";
 import Nav from "./components/Nav";
+import LoginForm from "./components/LoginForm";
 
 const socket = socketIO.connect("http://localhost:4000");
 function App() {
@@ -22,6 +23,7 @@ function App() {
 					path="/products/bid/:name/:price"
 					element={<BidProduct socket={socket} />}
 				/>
+				<Route path="/login" element={<LoginForm />} />
 			</Routes>
 		</div>
 	);
