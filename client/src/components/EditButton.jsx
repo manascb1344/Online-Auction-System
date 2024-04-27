@@ -5,7 +5,7 @@ const EditButton = ({ product }) => {
 	const navigate = useNavigate();
 
 	const handleClick = () =>
-		navigate(`/products/bid/${product.name}/${product.price}`);
+		navigate(`/products/bid/${product.Item_Name}/${product.Last_Bid}`);
 
 	return (
 		<svg

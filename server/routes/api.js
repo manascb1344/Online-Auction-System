@@ -6,7 +6,7 @@ const connection = require("../config/db");
 router.get("/", (req, res) => {
 	console.log("Received API request");
 	connection.query(
-		"SELECT items.Item_ID, items.Item_Name, items.Description, items.Starting_Price, items.Auction_End_Time, items.Category, sellers.Username AS Seller_Username, sellers.Email AS Seller_Email, sellers.Address AS Seller_Address, sellers.Account_Balance AS Seller_Account_Balance FROM items JOIN sellers ON items.Seller_ID = sellers.Seller_ID",
+		"SELECT items.*, sellers.Username AS Seller_Username, sellers.Email AS Seller_Email, sellers.Address AS Seller_Address, sellers.Account_Balance AS Seller_Account_Balance FROM items JOIN sellers ON items.Seller_ID = sellers.Seller_ID",
 		(err, results) => {
 			if (err) {
 				console.error("Error fetching items from database:", err);

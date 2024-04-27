@@ -1,21 +1,37 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
-const BidProduct = ({ socket }) => {
+const BidProduct = () => {
 	const { name, price } = useParams();
 	const [amount, setAmount] = useState(price);
 	const navigate = useNavigate();
 	const [error, setError] = useState(false);
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (amount > Number(price)) {
-			socket.emit("bidProduct", {
-				amount,
-				last_bidder: localStorage.getItem("userName"),
-				name,
-			});
-			navigate("/products");
+			try {
+				// Send a POST request to the backend endpoint
+				const response = await axios.post(
+					"http://localhost:4000/api/bid",
+					{
+						itemName: name,
+						amount,
+						last_bidder: localStorage.getItem("userName"),
+					}
+				);
+
+				if (!response.ok) {
+					throw new Error("Failed to place bid");
+				}
+
+				// Redirect to the products page on successful bid
+				navigate("/products");
+			} catch (error) {
+				console.error("Error placing bid:", error);
+				setError(true);
+			}
 		} else {
 			setError(true);
 		}

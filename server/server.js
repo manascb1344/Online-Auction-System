@@ -11,6 +11,7 @@ const cors = require("cors");
 const apiRoutes = require("./routes/api");
 const sellerRoutes = require("./routes/seller");
 const authRoutes = require("./routes/authRoutes");
+const bidRoute = require("./routes/bid");
 
 // Socket.io setup
 const socketIO = require("socket.io")(http, {
@@ -26,7 +27,7 @@ app.use(cors());
 app.use("/api", apiRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/login", authRoutes);
-
+app.use("/api/bid", bidRoute);
 // Socket.io events
 require("./socket")(socketIO);
 
