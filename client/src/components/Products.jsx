@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import EditButton from "./EditButton";
 import { Link } from "react-router-dom";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const Products = () => {
 	const [products, setProducts] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [productsPerPage] = useState(15);
 
 	useEffect(() => {
 		const fetchProducts = async () => {
@@ -33,17 +36,22 @@ const Products = () => {
 		};
 	}, []);
 
+	// Get current products
+	const indexOfLastProduct = currentPage * productsPerPage;
+	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+	const currentProducts = products
+		? products.slice(indexOfFirstProduct, indexOfLastProduct)
+		: [];
+
+	// Change page
+	const nextPage = () => setCurrentPage(currentPage + 1);
+	const prevPage = () => setCurrentPage(currentPage - 1);
+
 	return (
 		<div className="font-poppins">
 			<div className="w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="flex justify-between items-center mb-8">
 					<h2 className="text-2xl font-semibold">Product List</h2>
-					{/* <Link
-						to="/products/add"
-						className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded"
-					>
-						ADD PRODUCTS
-					</Link> */}
 				</div>
 
 				<div className="overflow-x-auto">
@@ -68,7 +76,7 @@ const Products = () => {
 									<td colSpan="6">Error: {error}</td>
 								</tr>
 							) : (
-								products.map((product, index) => (
+								currentProducts.map((product, index) => (
 									<tr
 										key={index}
 										className={index % 2 === 0 ? "bg-gray-100" : ""}
@@ -96,6 +104,26 @@ const Products = () => {
 							)}
 						</tbody>
 					</table>
+				</div>
+				{/* Pagination */}
+				<div className="flex justify-center mt-4">
+					<button
+						className="px-3 py-1 rounded bg-gray-100 mr-2"
+						onClick={prevPage}
+						disabled={currentPage === 1}
+					>
+						<FiChevronLeft />
+					</button>
+					<span className="px-3 py-1 rounded bg-gray-100 mr-2">
+						{currentPage}
+					</span>
+					<button
+						className="px-3 py-1 rounded bg-gray-100"
+						onClick={nextPage}
+						disabled={currentProducts.length < productsPerPage}
+					>
+						<FiChevronRight />
+					</button>
 				</div>
 			</div>
 		</div>

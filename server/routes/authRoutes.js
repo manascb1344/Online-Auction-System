@@ -44,7 +44,11 @@ router.post("/", async (req, res) => {
 				const isAuthenticated = password === user.Password;
 
 				// Return authentication status
-				res.json({ auth: isAuthenticated });
+				res.json({
+					auth: isAuthenticated,
+					buyerID: user.Buyer_ID,
+					sellerID: user.Seller_ID,
+				});
 			}
 		);
 	} catch (error) {

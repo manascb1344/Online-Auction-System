@@ -6,12 +6,14 @@ const PORT = 4000;
 
 // Import middleware
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 // Import routes
 const apiRoutes = require("./routes/api");
 const sellerRoutes = require("./routes/seller");
 const authRoutes = require("./routes/authRoutes");
 const bidRoute = require("./routes/bid");
+const addProdRoute = require("./routes/addProduct");
 
 // Socket.io setup
 const socketIO = require("socket.io")(http, {
@@ -22,12 +24,15 @@ const socketIO = require("socket.io")(http, {
 
 // Middleware
 app.use(cors());
+app.use(bodyParser.json());
 
 // Routes
 app.use("/api", apiRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/login", authRoutes);
 app.use("/api/bid", bidRoute);
+app.use("/api/addProduct", addProdRoute);
+
 // Socket.io events
 require("./socket")(socketIO);
 

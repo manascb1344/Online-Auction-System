@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Nav = ({ header, socket }) => {
 	const [notification, setNotification] = useState("");
+	const navigate = useNavigate(); // Initialize useNavigate hook
 
 	useEffect(() => {
 		socket.on("addProductResponse", (data) => {
@@ -23,6 +25,16 @@ const Nav = ({ header, socket }) => {
 		});
 	}, [socket]);
 
+	const handleLogout = () => {
+		localStorage.removeItem("seller_id");
+		localStorage.removeItem("buyer_id");
+		localStorage.removeItem("username");
+		localStorage.removeItem("userType");
+
+		// Navigate to /login route upon logout
+		navigate("/login");
+	};
+
 	return (
 		<nav className="navbar flex justify-between items-center px-4 py-2 bg-gray-200">
 			<div className="header">
@@ -31,6 +43,7 @@ const Nav = ({ header, socket }) => {
 
 			<div>
 				<p className="text-red-500">{notification}</p>
+				<button onClick={handleLogout}>Logout</button>
 			</div>
 		</nav>
 	);

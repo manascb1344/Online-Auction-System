@@ -24,10 +24,19 @@ const LoginForm = () => {
 			// Handle successful login
 			if (response.data.auth) {
 				console.log("Login successful");
-				// Store username in local storage
+				// Store username and userType in local storage
 				localStorage.setItem("username", username);
-				// Navigate to the home route ("/")
-				navigate("/products");
+				localStorage.setItem("userType", userType);
+				// Conditionally store buyerID or sellerID based on userType
+				if (userType === "buyer") {
+					localStorage.removeItem("seller_id"); // Clear seller_id if a buyer is logged in
+					localStorage.setItem("buyer_id", response.data.buyerID);
+					navigate("/products"); // Navigate to /products for buyers
+				} else if (userType === "seller") {
+					localStorage.removeItem("buyer_id"); // Clear buyer_id if a seller is logged in
+					localStorage.setItem("seller_id", response.data.sellerID);
+					navigate("/seller"); // Navigate to /seller for sellers
+				}
 			} else {
 				setError("Invalid username or password.");
 			}
