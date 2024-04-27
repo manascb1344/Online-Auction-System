@@ -9,13 +9,13 @@ const socketIO = require("socket.io")(http, {
 		origin: "http://localhost:3000",
 	},
 });
-const mysql = require("mysql2"); // Import the mysql2 library
+const mysql = require("mysql2");
 
 const connection = mysql.createConnection({
-	host: "127.0.0.1", // Your MySQL host
-	user: "root", // Your MySQL username
-	password: "1m2m3m4m5m", // Your MySQL password
-	database: "dbms", // Your MySQL database name
+	host: "127.0.0.1",
+	user: "root",
+	password: "1m2m3m4m5m",
+	database: "dbms",
 });
 
 app.use(cors());
@@ -47,16 +47,27 @@ socketIO.on("connection", (socket) => {
 
 	socket.on("addProduct", (data) => {
 		console.log("Received addProduct event:", data);
-		objectData["products"].push(data);
-		const stringData = JSON.stringify(objectData, null, 2);
-		fs.writeFile("data.json", stringData, (err) => {
-			if (err) {
-				console.error("Error writing to file:", err);
-			} else {
-				console.log("Data written to data.json successfully");
+		const { name, price, owner } = data;
+
+		connection.query(
+			"INSERT INTO items (Item_Name, Starting_Price, Seller_ID) VALUES (?, ?, (SELECT Seller_ID FROM sellers WHERE Username = ?))",
+			[name, price, owner],
+			(err, results) => {
+				if (err) {
+					console.error("Error adding a new product:", err);
+					socket.emit("addProductResponse", {
+						success: false,
+						message: "Failed to add product",
+					});
+				} else {
+					console.log("New product added successfully");
+					socket.emit("addProductResponse", {
+						success: true,
+						message: "Product added successfully",
+					});
+				}
 			}
-		});
-		socket.broadcast.emit("addProductResponse", data);
+		);
 	});
 
 	socket.on("bidProduct", (data) => {
@@ -71,33 +82,26 @@ socketIO.on("connection", (socket) => {
 	});
 });
 
-// Route to fetch data from the MySQL database
 app.get("/api", (req, res) => {
-  console.log("Received API request");
-  // Query to select all items from the items table with seller's details
-  connection.query(
-    "SELECT items.Item_ID, items.Item_Name, items.Description, items.Starting_Price, items.Auction_End_Time, items.Category, sellers.Username AS Seller_Username, sellers.Email AS Seller_Email, sellers.Address AS Seller_Address, sellers.Account_Balance AS Seller_Account_Balance FROM items JOIN sellers ON items.Seller_ID = sellers.Seller_ID",
-    (err, results) => {
-      if (err) {
-        console.error("Error fetching items from database:", err);
-        res.status(500).json({ error: "Internal Server Error" });
-      } else {
-        console.log("Received results from database:", results);
-        res.json({ items: results }); // Send the items as JSON response
-      }
-    }
-  );
+	console.log("Received API request");
+	connection.query(
+		"SELECT items.Item_ID, items.Item_Name, items.Description, items.Starting_Price, items.Auction_End_Time, items.Category, sellers.Username AS Seller_Username, sellers.Email AS Seller_Email, sellers.Address AS Seller_Address, sellers.Account_Balance AS Seller_Account_Balance FROM items JOIN sellers ON items.Seller_ID = sellers.Seller_ID",
+		(err, results) => {
+			if (err) {
+				console.error("Error fetching items from database:", err);
+				res.status(500).json({ error: "Internal Server Error" });
+			} else {
+				console.log("Received results from database:", results);
+				res.json({ items: results });
+			}
+		}
+	);
 });
-
-
-
-// Route to fetch seller's name based on seller ID
 app.get("/api/seller/:id", (req, res) => {
 	console.log("Received request to fetch seller by ID");
 	const sellerId = req.params.id;
-	// Query to select seller name from the sellers table based on seller ID
 	connection.query(
-		"SELECT name FROM sellers WHERE id = ?",
+		"SELECT name FROM sellers WHERE Seller_ID = ?",
 		[sellerId],
 		(err, results) => {
 			if (err) {
@@ -112,7 +116,7 @@ app.get("/api/seller/:id", (req, res) => {
 						"Received seller name from database:",
 						sellerName
 					);
-					res.json({ sellerName }); // Send the seller name as part of JSON response
+					res.json({ sellerName });
 				}
 			}
 		}
