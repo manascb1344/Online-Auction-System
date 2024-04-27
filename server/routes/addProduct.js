@@ -11,26 +11,27 @@ router.post("/", (req, res) => {
 		startingPrice,
 		auctionEndTime,
 		category,
+		sellerID,
 	} = req.body;
 
-	// Retrieve the last seller ID from the database
+	// Retrieve the last item ID from the database
 	pool.query(
-		"SELECT Seller_ID FROM Items ORDER BY Seller_ID DESC LIMIT 1",
+		"SELECT Item_ID FROM Items ORDER BY Item_ID DESC LIMIT 1",
 		(error, results) => {
 			if (error) {
-				console.error("Error retrieving last seller ID:", error);
+				console.error("Error retrieving last item ID:", error);
 				return res
 					.status(500)
 					.json({ error: "Failed to add product" });
 			}
 
-			let lastSellerId = 1; // Default to 1 if there are no existing rows
+			let lastItemId = 0; // Default to 0 if there are no existing rows
 			if (results.length > 0) {
-				lastSellerId = results[0].Seller_ID;
+				lastItemId = results[0].Item_ID;
 			}
 
-			// Increment the last seller ID by one to generate the new seller ID
-			const sellerId = lastSellerId + 1;
+			// Increment the last item ID by one to generate the new item ID
+			const itemId = lastItemId + 1;
 
 			// Set default values for last bidder and last bid
 			const lastBidder = null;
@@ -38,16 +39,17 @@ router.post("/", (req, res) => {
 
 			// Insert the new product into the database
 			pool.query(
-				"INSERT INTO Items (Seller_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+				"INSERT INTO Items (Seller_ID, Item_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				[
-					sellerId,
+					sellerID,
+					itemId,
 					itemName,
 					description,
 					startingPrice,
 					auctionEndTime,
 					category,
 					lastBidder,
-					lastBid,
+					startingPrice, // Include the lastBid value here
 				],
 				(error, results) => {
 					if (error) {

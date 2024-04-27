@@ -1,30 +1,115 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const ViewProducts = () => {
 	const [products, setProducts] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [productsPerPage] = useState(15);
 
 	useEffect(() => {
-		// Fetch products from backend API
 		const fetchProducts = async () => {
 			try {
-				const response = await axios.get("/api/seller/products");
-				setProducts(response.data.products);
+				const sellerID = localStorage.getItem("seller_id");
+				const response = await fetch(`http://localhost:4000/api/seller/products/${sellerID}`);
+				if (!response.ok) {
+					throw new Error("Failed to fetch products");
+				}
+				const data = await response.json();
+				setProducts(data);
+				setLoading(false);
 			} catch (error) {
 				console.error("Error fetching products:", error);
+				setError(error.message);
+				setLoading(false);
 			}
 		};
+
+		const pollingInterval = setInterval(fetchProducts, 5000);
+
 		fetchProducts();
+
+		return () => {
+			clearInterval(pollingInterval);
+		};
 	}, []);
 
+	const indexOfLastProduct = currentPage * productsPerPage;
+	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+	const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+	const nextPage = () => setCurrentPage(currentPage + 1);
+	const prevPage = () => setCurrentPage(currentPage - 1);
+
 	return (
-		<div>
-			<h2>My Products</h2>
-			<ul>
-				{products.map((product) => (
-					<li key={product.Item_ID}>{product.Item_Name}</li>
-				))}
-			</ul>
+		<div className="font-poppins">
+			<div className="w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div className="flex justify-between items-center mb-8">
+					<h2 className="text-2xl font-semibold">Product List</h2>
+				</div>
+				<div className="overflow-x-auto">
+					<table className="w-full table-auto border-collapse">
+						<thead>
+							<tr className="bg-gray-200">
+								<th className="px-4 py-2 text-left">Product ID</th>
+								<th className="px-4 py-2 text-left">Seller ID</th>
+								<th className="px-4 py-2 text-left">Product Name</th>
+								<th className="px-4 py-2 text-left">Description</th>
+								<th className="px-4 py-2 text-left">Starting Price</th>
+								<th className="px-4 py-2 text-left">Auction End Time</th>
+								<th className="px-4 py-2 text-left">Category</th>
+								<th className="px-4 py-2 text-left">Last Bidder</th>
+								<th className="px-4 py-2 text-left">Last Bid</th>
+							</tr>
+						</thead>
+						<tbody>
+							{loading ? (
+								<tr>
+									<td colSpan="9">Loading...</td>
+								</tr>
+							) : error ? (
+								<tr>
+									<td colSpan="9">Error: {error}</td>
+								</tr>
+							) : (
+								currentProducts.map((product) => (
+									<tr key={product.Item_ID}>
+										<td className="px-4 py-2">{product.Item_ID}</td>
+										<td className="px-4 py-2">{product.Seller_ID}</td>
+										<td className="px-4 py-2">{product.Item_Name}</td>
+										<td className="px-4 py-2">{product.Description}</td>
+										<td className="px-4 py-2">{product.Starting_Price}</td>
+										<td className="px-4 py-2">{product.Auction_End_Time}</td>
+										<td className="px-4 py-2">{product.Category}</td>
+										<td className="px-4 py-2">{product.Last_Bidder || "None"}</td>
+										<td className="px-4 py-2">{product.Last_Bid}</td>
+									</tr>
+								))
+							)}
+						</tbody>
+					</table>
+				</div>
+				<div className="flex justify-center mt-4">
+					<button
+						className="px-3 py-1 rounded bg-gray-100 mr-2"
+						onClick={prevPage}
+						disabled={currentPage === 1}
+					>
+						<FiChevronLeft />
+					</button>
+					<span className="px-3 py-1 rounded bg-gray-100 mr-2">
+						{currentPage}
+					</span>
+					<button
+						className="px-3 py-1 rounded bg-gray-100"
+						onClick={nextPage}
+						disabled={currentProducts.length < productsPerPage}
+					>
+						<FiChevronRight />
+					</button>
+				</div>
+			</div>
 		</div>
 	);
 };
