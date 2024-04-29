@@ -49,18 +49,18 @@ const ViewProducts = () => {
 					<h2 className="text-2xl font-semibold">Product List</h2>
 				</div>
 				<div className="overflow-x-auto">
-					<table className="w-full table-auto border-collapse">
+					<table className="w-95p table-auto border border-gray-700 mx-auto border-collapse">
 						<thead>
 							<tr className="bg-gray-200">
-								<th className="px-4 py-2 text-left">Product ID</th>
-								<th className="px-4 py-2 text-left">Seller ID</th>
-								<th className="px-4 py-2 text-left">Product Name</th>
-								<th className="px-4 py-2 text-left">Description</th>
-								<th className="px-4 py-2 text-left">Starting Price</th>
-								<th className="px-4 py-2 text-left">Auction End Time</th>
-								<th className="px-4 py-2 text-left">Category</th>
-								<th className="px-4 py-2 text-left">Last Bidder</th>
-								<th className="px-4 py-2 text-left">Last Bid</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Product ID</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Seller ID</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Product Name</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Description</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Starting Price</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Auction End Time</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Category</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Last Bidder</th>
+								<th className="px-4 py-2 text-left border border-gray-700">Last Bid</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -75,15 +75,15 @@ const ViewProducts = () => {
 							) : (
 								currentProducts.map((product) => (
 									<tr key={product.Item_ID}>
-										<td className="px-4 py-2">{product.Item_ID}</td>
-										<td className="px-4 py-2">{product.Seller_ID}</td>
-										<td className="px-4 py-2">{product.Item_Name}</td>
-										<td className="px-4 py-2">{product.Description}</td>
-										<td className="px-4 py-2">{product.Starting_Price}</td>
-										<td className="px-4 py-2">{product.Auction_End_Time}</td>
-										<td className="px-4 py-2">{product.Category}</td>
-										<td className="px-4 py-2">{product.Last_Bidder || "None"}</td>
-										<td className="px-4 py-2">{product.Last_Bid}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Item_ID}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Seller_ID}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Item_Name}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Description}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Starting_Price}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Auction_End_Time}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Category}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Last_Bidder || "None"}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Last_Bid}</td>
 									</tr>
 								))
 							)}

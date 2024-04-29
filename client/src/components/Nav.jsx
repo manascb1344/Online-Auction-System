@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 const Nav = ({ header, socket }) => {
 	const [notification, setNotification] = useState("");
-	const navigate = useNavigate(); // Initialize useNavigate hook
+	const navigate = useNavigate();
 	const userType = localStorage.getItem("userType");
+	const isLoggedIn = localStorage.getItem("username");
 
 	useEffect(() => {
 		socket.on("addProductResponse", (data) => {
@@ -31,33 +32,60 @@ const Nav = ({ header, socket }) => {
 		localStorage.removeItem("buyer_id");
 		localStorage.removeItem("username");
 		localStorage.removeItem("userType");
-
-		// Navigate to /login route upon logout
 		navigate("/login");
 	};
 
 	return (
-		<nav className="navbar flex justify-between items-center px-4 py-2 bg-gray-200 md:h-16 lg:h-20">
-			<div className="header">
-				<h2 className="text-xl font-semibold">{header}</h2>
-			</div>
-
-			<div>
-				<p className="text-red-500">{notification}</p>
-				<button className="px-4 py-2 bg-red-500 text-white rounded-md mr-2" onClick={handleLogout}>Logout</button>
-			</div>
-
-			<div>
-				{userType === "seller" && (
-					<div className="flex">
-						<button className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2" onClick={() => navigate("/seller")}>Seller Dashboard</button>
-						<button className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2" onClick={() => navigate("/seller/add-product")}>Add Product</button>
-						<button className="px-4 py-2 bg-blue-500 text-white rounded-md" onClick={() => navigate("/seller/products")}>View Products</button>
+		<nav className="w-full bg-gray-800 text-white mb-0">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+				<div className="flex items-center justify-between h-16">
+					<div className="flex items-center">
+						<h2 className="text-xl font-semibold">{header}</h2>
 					</div>
-				)}
-				{userType === "buyer" && (
-					<button className="px-4 py-2 bg-blue-500 text-white rounded-md" onClick={() => navigate("/products")}>View Products</button>
-				)}
+					<div className="flex items-center">
+						<p className="text-red-500 mr-4">{notification}</p>
+						{isLoggedIn && (
+							<button
+								className="px-4 py-2 bg-red-500 text-white rounded-md mr-2"
+								onClick={handleLogout}
+							>
+								Logout
+							</button>
+						)}
+					</div>
+					<div>
+						{userType === "seller" && (
+							<div className="flex">
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
+									onClick={() => navigate("/seller")}
+								>
+									Seller Dashboard
+								</button>
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
+									onClick={() => navigate("/seller/add-product")}
+								>
+									Add Product
+								</button>
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md"
+									onClick={() => navigate("/seller/products")}
+								>
+									View Products
+								</button>
+							</div>
+						)}
+						{userType === "buyer" && (
+							<button
+								className="px-4 py-2 bg-blue-500 text-white rounded-md"
+								onClick={() => navigate("/products")}
+							>
+								View Products
+							</button>
+						)}
+					</div>
+				</div>
 			</div>
 		</nav>
 	);
