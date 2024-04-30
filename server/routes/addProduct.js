@@ -3,7 +3,6 @@ const pool = require("../config/db");
 
 const router = express.Router();
 
-// POST /api/addProduct - Add a new product
 router.post("/", (req, res) => {
 	const {
 		itemName,
@@ -14,7 +13,6 @@ router.post("/", (req, res) => {
 		sellerID,
 	} = req.body;
 
-	// Retrieve the last item ID from the database
 	pool.query(
 		"SELECT Item_ID FROM Items ORDER BY Item_ID DESC LIMIT 1",
 		(error, results) => {
@@ -25,19 +23,15 @@ router.post("/", (req, res) => {
 					.json({ error: "Failed to add product" });
 			}
 
-			let lastItemId = 0; // Default to 0 if there are no existing rows
+			let lastItemId = 0;
 			if (results.length > 0) {
 				lastItemId = results[0].Item_ID;
 			}
-
-			// Increment the last item ID by one to generate the new item ID
 			const itemId = lastItemId + 1;
 
-			// Set default values for last bidder and last bid
 			const lastBidder = null;
 			const lastBid = startingPrice;
 
-			// Insert the new product into the database
 			pool.query(
 				"INSERT INTO Items (Seller_ID, Item_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				[
@@ -49,7 +43,7 @@ router.post("/", (req, res) => {
 					auctionEndTime,
 					category,
 					lastBidder,
-					startingPrice, // Include the lastBid value here
+					startingPrice,
 				],
 				(error, results) => {
 					if (error) {
@@ -58,7 +52,6 @@ router.post("/", (req, res) => {
 							.status(500)
 							.json({ error: "Failed to add product" });
 					}
-					// Return success response
 					return res
 						.status(200)
 						.json({ message: "Product added successfully" });

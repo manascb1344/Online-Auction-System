@@ -5,14 +5,12 @@ import { useNavigate } from "react-router-dom";
 const LoginForm = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const [userType, setUserType] = useState("buyer"); // Default to buyer
-	const [error, setError] = useState(""); // State for handling login errors
-	const navigate = useNavigate(); // Initialize the navigate function
-
+	const [userType, setUserType] = useState("buyer");
+	const [error, setError] = useState("");
+	const navigate = useNavigate();
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		try {
-			// Send login request to backend
 			const response = await axios.post(
 				"http://localhost:4000/api/login",
 				{
@@ -21,21 +19,18 @@ const LoginForm = () => {
 					userType,
 				}
 			);
-			// Handle successful login
 			if (response.data.auth) {
 				console.log("Login successful");
-				// Store username and userType in local storage
 				localStorage.setItem("username", username);
 				localStorage.setItem("userType", userType);
-				// Conditionally store buyerID or sellerID based on userType
 				if (userType === "buyer") {
-					localStorage.removeItem("seller_id"); // Clear seller_id if a buyer is logged in
+					localStorage.removeItem("seller_id");
 					localStorage.setItem("buyer_id", response.data.buyerID);
-					navigate("/products"); // Navigate to /products for buyers
+					navigate("/products");
 				} else if (userType === "seller") {
-					localStorage.removeItem("buyer_id"); // Clear buyer_id if a seller is logged in
+					localStorage.removeItem("buyer_id");
 					localStorage.setItem("seller_id", response.data.sellerID);
-					navigate("/seller"); // Navigate to /seller for sellers
+					navigate("/seller");
 				}
 			} else {
 				setError("Invalid username or password.");

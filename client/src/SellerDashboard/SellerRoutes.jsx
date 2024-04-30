@@ -1,4 +1,3 @@
-// SellerRoutes.js
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import ViewProducts from "./viewProducts";

@@ -35,14 +35,12 @@ const Products = () => {
 		};
 	}, []);
 
-	// Get current products
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
 	const currentProducts = products
 		? products.slice(indexOfFirstProduct, indexOfLastProduct)
 		: [];
 
-	// Change page
 	const nextPage = () => setCurrentPage(currentPage + 1);
 	const prevPage = () => setCurrentPage(currentPage - 1);
 
@@ -109,7 +107,6 @@ const Products = () => {
 					</table>
 				</div>
 
-				{/* Pagination */}
 				<div className="flex justify-center mt-4">
 					<button
 						className="px-3 py-1 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 mr-2 focus:outline-none"

@@ -1,14 +1,10 @@
-// productsBySeller.js
-
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/db");
 
-// API endpoint to get all products of a seller
 router.get("/:sellerId", (req, res) => {
 	const { sellerId } = req.params;
 
-	// SQL query to retrieve products of a seller based on seller ID
 	const query = `
     SELECT * FROM items
     WHERE seller_id = ?

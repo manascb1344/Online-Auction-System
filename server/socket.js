@@ -1,4 +1,3 @@
-// socket.js
 module.exports = (socketIO) => {
 	socketIO.on("connection", (socket) => {
 		console.log(`⚡: ${socket.id} user just connected!`);

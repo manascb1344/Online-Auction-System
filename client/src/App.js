@@ -6,9 +6,9 @@ import Home from "./components/Home";
 import BidProduct from "./components/BidProduct";
 import Products from "./components/Products";
 import LoginForm from "./components/LoginForm";
-import SellerDashboard from "./SellerDashboard/SellerDashboard"; // Import SellerDashboard component
-import ViewProductsSeller from "./SellerDashboard/viewProducts"; // Import ViewProducts component
-import AddProductSeller from "./SellerDashboard/addProduct"; // Import AddProduct component
+import SellerDashboard from "./SellerDashboard/SellerDashboard";
+import ViewProductsSeller from "./SellerDashboard/viewProducts";
+import AddProductSeller from "./SellerDashboard/addProduct";
 
 const socket = socketIO.connect("http://localhost:4000");
 
@@ -17,7 +17,6 @@ function App() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		// Check if user is already logged in by checking local storage
 		const username = localStorage.getItem("username");
 		if (username) {
 			setIsLoggedIn(true);

@@ -1,7 +1,5 @@
-// SellerDashboard.js
 import React from "react";
-import { Link, Routes, Route } from "react-router-dom";
-import SellerRoutes from "./SellerRoutes";
+import { Link } from "react-router-dom";
 
 const SellerDashboard = () => {
 	return (
