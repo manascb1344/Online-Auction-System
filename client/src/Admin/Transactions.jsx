@@ -11,7 +11,7 @@ const Transactions = () => {
 	useEffect(() => {
 		const fetchTransactions = async () => {
 			try {
-				const response = await fetch("http://localhost:4000/api");
+				const response = await fetch("http://localhost:4000/api/transactions");
 				if (!response.ok) {
 					throw new Error("Failed to fetch Transactions");
 				}
@@ -55,7 +55,8 @@ const Transactions = () => {
 						<thead>
 							<tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
 								<th className="py-3 px-6 text-left">Transaction ID</th>
-								<th className="py-3 px-6 text-left">Item ID</th>
+								<th className="py-3 px-6 text-left">Buyer</th>
+								<th className="py-3 px-6 text-left">Seller</th>
 								<th className="py-3 px-6 text-left">Amount (Rupees)</th>
 								<th className="py-3 px-6 text-left">Transaction Time</th>
 								<th className="py-3 px-6 text-left">Payment Method</th>
@@ -85,7 +86,10 @@ const Transactions = () => {
 											{transaction.Transaction_ID}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{transaction.Item_ID}
+											{transaction.Buyer_Name}
+										</td>
+										<td className="py-4 px-6 border-b border-gray-200">
+											{transaction.Seller_Name}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
 											{transaction.Transaction_Amount}
