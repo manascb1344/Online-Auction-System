@@ -11,7 +11,7 @@ const Bids = () => {
 	useEffect(() => {
 		const fetchBids = async () => {
 			try {
-				const response = await fetch("http://localhost:4000/api");
+				const response = await fetch("http://localhost:4000/api/placedbids");
 				if (!response.ok) {
 					throw new Error("Failed to fetch Bids");
 				}
@@ -55,6 +55,8 @@ const Bids = () => {
 						<thead>
 							<tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
 								<th className="py-3 px-6 text-left">Bid ID</th>
+								<th className="py-3 px-6 text-left">Bidder Name</th>
+								<th className="py-3 px-6 text-left">Item</th>
 								<th className="py-3 px-6 text-left">Bid Amount</th>
 								<th className="py-3 px-6 text-left">Time of Bid</th>
 								<th className="py-3 px-6 text-left">Status</th>
@@ -82,6 +84,12 @@ const Bids = () => {
 									>
 										<td className="py-4 px-6 border-b border-gray-200">
 											{bid.Bid_ID}
+										</td>
+										<td className="py-4 px-6 border-b border-gray-200">
+											{bid.Bidder_Name}
+										</td>
+										<td className="py-4 px-6 border-b border-gray-200">
+											{bid.Item}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
 											{bid.Bid_Amount}
