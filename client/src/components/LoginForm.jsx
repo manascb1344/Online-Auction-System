@@ -31,6 +31,9 @@ const LoginForm = () => {
 					localStorage.removeItem("buyer_id");
 					localStorage.setItem("seller_id", response.data.sellerID);
 					navigate("/seller");
+				} else if (userType === "admin") {
+					localStorage.setItem("admin_id", response.data.adminID);
+					navigate("/admin");
 				}
 			} else {
 				setError("Invalid username or password.");
