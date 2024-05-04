@@ -84,6 +84,34 @@ const Nav = ({ header, socket }) => {
 								View Products
 							</button>
 						)}
+						{userType === "admin" && (
+							<div className="flex">
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
+									onClick={() => navigate("/admin")}
+								>
+									Admin Dashboard
+								</button>
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
+									onClick={() => navigate("/admin/auctions")}
+								>
+									Auctions History
+								</button>
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md"
+									onClick={() => navigate("/admin/transactions")}
+								>
+									Transaction History
+								</button>
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md"
+									onClick={() => navigate("/admin/bids")}
+								>
+									Bids Placed
+								</button>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>
