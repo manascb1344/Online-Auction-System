@@ -11,7 +11,7 @@ const Auctions = () => {
 	useEffect(() => {
 		const fetchAuctions = async () => {
 			try {
-				const response = await fetch("http://localhost:4000/api");
+				const response = await fetch("http://localhost:4000/api/auctions");
 				if (!response.ok) {
 					throw new Error("Failed to fetch Auctions");
 				}
@@ -55,6 +55,8 @@ const Auctions = () => {
 						<thead>
 							<tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
 								<th className="py-3 px-6 text-left">ID</th>
+								<th className="py-3 px-6 text-left">Item Name</th>
+								<th className="py-3 px-6 text-left">Description</th>
 								<th className="py-3 px-6 text-left">Start Time</th>
 								<th className="py-3 px-6 text-left">End Time</th>
 								<th className="py-3 px-6 text-left">Status</th>
@@ -82,6 +84,12 @@ const Auctions = () => {
 									>
 										<td className="py-4 px-6 border-b border-gray-200">
 											{auction.Auction_ID}
+										</td>
+										<td className="py-4 px-6 border-b border-gray-200">
+											{auction.Item_Name}
+										</td>
+										<td className="py-4 px-6 border-b border-gray-200">
+											{auction.Description}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
 											{auction.Auction_Start_Time}
