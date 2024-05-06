@@ -30,6 +30,7 @@ const Nav = ({ header, socket }) => {
 	const handleLogout = () => {
 		localStorage.removeItem("seller_id");
 		localStorage.removeItem("buyer_id");
+		localStorage.removeItem("admin_id");
 		localStorage.removeItem("username");
 		localStorage.removeItem("userType");
 		navigate("/login");
