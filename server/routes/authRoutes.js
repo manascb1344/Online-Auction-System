@@ -13,6 +13,8 @@ router.post("/", async (req, res) => {
 			tableName = "buyers";
 		} else if (userType === "seller") {
 			tableName = "sellers";
+		} else if (userType === "admin") {
+			tableName = 'admin';
 		} else {
 			return res.status(400).json({ message: "Invalid user type" });
 		}
@@ -42,6 +44,7 @@ router.post("/", async (req, res) => {
 					auth: isAuthenticated,
 					buyerID: user.Buyer_ID,
 					sellerID: user.Seller_ID,
+					adminID: user.Admin_ID
 				});
 			}
 		);

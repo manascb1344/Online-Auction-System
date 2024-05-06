@@ -15,6 +15,9 @@ const authRoutes = require("./routes/authRoutes");
 const bidRoute = require("./routes/bid");
 const addProdRoute = require("./routes/addProduct");
 const getProductsBySeller = require("./routes/sellerProductRoute");
+const auctionsRoute = require("./routes/auctions");
+const transactionsRoute = require("./routes/transactions");
+const bidsRoute = require("./routes/bids");
 
 // Socket.io setup
 const socketIO = require("socket.io")(http, {
@@ -34,6 +37,9 @@ app.use("/api/login", authRoutes);
 app.use("/api/bid", bidRoute);
 app.use("/api/addProduct", addProdRoute);
 app.use("/api/seller/products", getProductsBySeller);
+app.use("/api/auctions", auctionsRoute);
+app.use("/api/transactions", transactionsRoute);
+app.use("/api/placedbids", bidsRoute);
 
 // Socket.io events
 require("./socket")(socketIO);

@@ -8,29 +8,48 @@ const LoginForm = () => {
 	const [userType, setUserType] = useState("buyer");
 	const [error, setError] = useState("");
 	const navigate = useNavigate();
+
 	const handleLogin = async (e) => {
 		e.preventDefault();
 		try {
-			const response = await axios.post(
-				"http://localhost:4000/api/login",
-				{
-					username,
-					password,
-					userType,
+			let loginSuccess = false;
+			let responseData;
+
+			if (userType === "admin") {
+				// Check if the username and password match the admin credentials
+				if (username === "admin" && password === "vjti@123") {
+					loginSuccess = true;
+					responseData = { adminID: "admin" }; // Mocking admin response
 				}
-			);
-			if (response.data.auth) {
+			} else {
+				// For buyer and seller logins, send the request to the server
+				const response = await axios.post(
+					"http://localhost:4000/api/login",
+					{
+						username,
+						password,
+						userType,
+					}
+				);
+				loginSuccess = response.data.auth;
+				responseData = response.data;
+			}
+
+			if (loginSuccess) {
 				console.log("Login successful");
 				localStorage.setItem("username", username);
 				localStorage.setItem("userType", userType);
 				if (userType === "buyer") {
 					localStorage.removeItem("seller_id");
-					localStorage.setItem("buyer_id", response.data.buyerID);
+					localStorage.setItem("buyer_id", responseData.buyerID);
 					navigate("/products");
 				} else if (userType === "seller") {
 					localStorage.removeItem("buyer_id");
-					localStorage.setItem("seller_id", response.data.sellerID);
+					localStorage.setItem("seller_id", responseData.sellerID);
 					navigate("/seller");
+				} else if (userType === "admin") {
+					localStorage.setItem("admin_id", responseData.adminID);
+					navigate("/admin");
 				}
 			} else {
 				setError("Invalid username or password.");
@@ -68,6 +87,7 @@ const LoginForm = () => {
 					>
 						<option value="buyer">Buyer</option>
 						<option value="seller">Seller</option>
+						<option value="admin">Admin</option>
 					</select>
 					<button
 						className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

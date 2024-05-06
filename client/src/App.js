@@ -81,6 +81,11 @@ import LoginForm from "./components/LoginForm";
 import SellerDashboard from "./SellerDashboard/SellerDashboard";
 import ViewProductsSeller from "./SellerDashboard/viewProducts";
 import AddProductSeller from "./SellerDashboard/addProduct";
+import AdminDashboard from "./Admin/AdminDashboard";
+import Auctions from "./Admin/Auctions";
+import Transactions from "./Admin/Transactions";
+import Bids from "./Admin/Bids";
+
 
 const socket = socketIO.connect("http://localhost:4000");
 
@@ -113,6 +118,22 @@ function App() {
 					<Route
 						path="/seller/add-product"
 						element={<AddProductSeller />}
+					/>
+					<Route
+						path="/admin"
+						element={<AdminDashboard />}
+					/>
+					<Route
+						path="/admin/auctions"
+						element={<Auctions />}
+					/>
+					<Route
+						path="/admin/transactions"
+						element={<Transactions />}
+					/>
+					<Route
+						path="/admin/bids"
+						element={<Bids />}
 					/>
 				</Routes>
 			)}
