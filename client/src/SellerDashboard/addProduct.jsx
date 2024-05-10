@@ -7,6 +7,7 @@ const AddsellerProd = () => {
 	const [description, setDescription] = useState("");
 	const [price, setPrice] = useState(0);
 	const [endTime, setEndTime] = useState("");
+	const [auctionStartTime, setAuctionStartTime] = useState("");
 	const [category, setCategory] = useState("");
 	const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const AddsellerProd = () => {
 				itemName: name,
 				description: description,
 				startingPrice: price,
+				auctionStartTime: auctionStartTime,
 				auctionEndTime: endTime,
 				category: category,
 				sellerID: sellerID,
@@ -68,6 +70,18 @@ const AddsellerProd = () => {
 						name="price"
 						value={price}
 						onChange={(e) => setPrice(e.target.value)}
+						required
+						className="w-full px-4 py-2 rounded border border-gray-300 mb-4 outline-none"
+					/>
+
+					<label htmlFor="auctionStartTime" className="mb-2"> {/* New label for Auction Start Time */}
+						Auction Start Time
+					</label>
+					<input
+						type="datetime-local"
+						name="auctionStartTime"
+						value={auctionStartTime}
+						onChange={(e) => setAuctionStartTime(e.target.value)}
 						required
 						className="w-full px-4 py-2 rounded border border-gray-300 mb-4 outline-none"
 					/>

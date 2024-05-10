@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import socketIO from "socket.io-client";
@@ -21,12 +22,17 @@ const socket = socketIO.connect("http://localhost:4000");
 function App() {
 	const [loading, setLoading] = useState(true);
 	const [userType, setUserType] = useState(null);
+	const [forceRefresh, setForceRefresh] = useState(false);
 
 	useEffect(() => {
 		const userType = localStorage.getItem("userType");
 		setUserType(userType);
 		setLoading(false);
-	}, []);
+	}, [forceRefresh]);
+
+	if (loading) {
+		return <div>Loading...</div>;
+	}
 
 	const isAuthenticated = () => {
 		return userType !== null;
@@ -47,36 +53,50 @@ function App() {
 	return (
 		<div>
 			<Nav header="Bid Items" socket={socket} />
-			{loading ? (
-				<div>Loading...</div>
-			) : (
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/products" element={isAuthenticated() && isBuyer() ? <Products /> : <Navigate to="/login" />} />
-					<Route path="/products/bid/:name/:price" element={isAuthenticated() && isBuyer() ? <BidProduct socket={socket} /> : <Navigate to="/login" />} />
-					<Route path="/login" element={<LoginForm />} />
-					{isAuthenticated() && isSeller() ? (
-						<>
-							<Route path="/seller" element={<SellerDashboard />} />
-							<Route path="/seller/products" element={<ViewProductsSeller />} />
-							<Route path="/seller/add-product" element={<AddProductSeller />} />
-						</>
-					) : (
-						<Route path="/seller/*" element={<AccessDenied />} />
-					)}
-					{isAuthenticated() && isAdmin() ? (
-						<>
-							<Route path="/admin" element={<AdminDashboard />} />
-							<Route path="/admin/auctions" element={<Auctions />} />
-							<Route path="/admin/transactions" element={<Transactions />} />
-							<Route path="/admin/bids" element={<Bids />} />
-						</>
-					) : (
-						<Route path="/admin/*" element={<AccessDenied />} />
-					)}
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			)}
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route
+					path="/products"
+					element={
+						isAuthenticated() && isBuyer() ? (
+							<Products />
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route
+					path="/products/bid/:name/:price"
+					element={
+						isAuthenticated() && isBuyer() ? (
+							<BidProduct socket={socket} />
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route path="/login" element={<LoginForm setForceRefresh={setForceRefresh} />} />
+				{isAuthenticated() && isSeller() ? (
+					<>
+						<Route path="/seller" element={<SellerDashboard />} />
+						<Route path="/seller/products" element={<ViewProductsSeller />} />
+						<Route path="/seller/add-product" element={<AddProductSeller />} />
+					</>
+				) : (
+					<Route path="/seller/*" element={<AccessDenied />} />
+				)}
+				{isAuthenticated() && isAdmin() ? (
+					<>
+						<Route path="/admin" element={<AdminDashboard />} />
+						<Route path="/admin/auctions" element={<Auctions />} />
+						<Route path="/admin/transactions" element={<Transactions />} />
+						<Route path="/admin/bids" element={<Bids />} />
+					</>
+				) : (
+					<Route path="/admin/*" element={<AccessDenied />} />
+				)}
+				<Route path="*" element={<NotFound />} />
+			</Routes>
 		</div>
 	);
 }

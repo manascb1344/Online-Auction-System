@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const LoginForm = () => {
+const LoginForm = ({ setForceRefresh }) => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [userType, setUserType] = useState("buyer");
@@ -16,13 +16,11 @@ const LoginForm = () => {
 			let responseData;
 
 			if (userType === "admin") {
-				// Check if the username and password match the admin credentials
 				if (username === "admin" && password === "vjti@123") {
 					loginSuccess = true;
-					responseData = { adminID: "admin" }; // Mocking admin response
+					responseData = { adminID: "admin" };
 				}
 			} else {
-				// For buyer and seller logins, send the request to the server
 				const response = await axios.post(
 					"http://localhost:4000/api/login",
 					{
@@ -42,13 +40,16 @@ const LoginForm = () => {
 				if (userType === "buyer") {
 					localStorage.removeItem("seller_id");
 					localStorage.setItem("buyer_id", responseData.buyerID);
+					setForceRefresh(prevState => !prevState);
 					navigate("/products");
 				} else if (userType === "seller") {
 					localStorage.removeItem("buyer_id");
 					localStorage.setItem("seller_id", responseData.sellerID);
+					setForceRefresh(prevState => !prevState);
 					navigate("/seller");
 				} else if (userType === "admin") {
 					localStorage.setItem("admin_id", responseData.adminID);
+					setForceRefresh(prevState => !prevState);
 					navigate("/admin");
 				}
 			} else {
