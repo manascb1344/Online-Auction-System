@@ -86,7 +86,7 @@ const Products = () => {
 								<th className="py-3 px-6 text-left">Seller</th>
 								<th className="py-3 px-6 text-left">Last Bid</th>
 								<th className="py-3 px-6 text-left">Countdown</th>
-								<th className="py-3 px-6 text-left">Action</th>
+								<th className="py-3 px-6 text-left">BID</th>
 							</tr>
 						</thead>
 						<tbody className="text-gray-600 text-sm font-light">
