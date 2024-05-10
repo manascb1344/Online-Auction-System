@@ -16,6 +16,7 @@ import Transactions from "./Admin/Transactions";
 import Bids from "./Admin/Bids";
 import AccessDenied from "./components/AccessDenied";
 import NotFound from "./components/NotFound";
+import Profile from "./components/Profile";
 
 const socket = socketIO.connect("http://localhost:4000");
 
@@ -70,6 +71,16 @@ function App() {
 					element={
 						isAuthenticated() && isBuyer() ? (
 							<BidProduct socket={socket} />
+						) : (
+							<Navigate to="/login" />
+						)
+					}
+				/>
+				<Route
+					path="/userprofile"
+					element={
+						isAuthenticated() && isBuyer() ? (
+							<Profile socket={socket} />
 						) : (
 							<Navigate to="/login" />
 						)

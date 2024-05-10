@@ -337,3 +337,4 @@ INSERT INTO `transactions` (`Transaction_ID`, `Buyer_ID`, `Seller_ID`, `Item_ID`
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+update_auction_statusupdate_auction_status
