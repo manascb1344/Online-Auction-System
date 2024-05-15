@@ -55,7 +55,7 @@ function App() {
 		<div>
 			<Nav header="Bid Items" socket={socket} />
 			<Routes>
-				<Route path="/" element={<Home />} />
+				<Route path="/" element={<LoginForm setForceRefresh={setForceRefresh} />} />
 				<Route
 					path="/products"
 					element={

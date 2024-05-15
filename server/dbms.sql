@@ -337,4 +337,4 @@ INSERT INTO `transactions` (`Transaction_ID`, `Buyer_ID`, `Seller_ID`, `Item_ID`
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
-update_auction_statusupdate_auction_status
+update_auction_statusupdate_auction_statusupdate_auction_status_eventupdate_auction_statusend_auction_insert_transactions_triggeritemssellerstransactionscreate_bid_entry_after_updateend_auction_insert_transactions_triggerend_auction_insert_transactions_triggertransactionstransactionscreate_bid_entry_after_updateend_auction_insert_transactions_trigger

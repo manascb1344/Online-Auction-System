@@ -36,6 +36,14 @@ const Profile = () => {
 		return <div className="text-center mt-4">{error}</div>;
 	}
 
+	let formattedAccountBalance = '';
+	const accountBalance = Number(profile.Account_Balance);
+	if (!isNaN(accountBalance)) {
+		formattedAccountBalance = accountBalance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	} else {
+		formattedAccountBalance = 'N/A';
+	}
+
 	return (
 		<div className="max-w-md mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
 			<h2 className="text-xl font-semibold text-center mb-4">Profile</h2>
@@ -43,7 +51,7 @@ const Profile = () => {
 				<p><strong>Username:</strong> {profile.Username}</p>
 				<p><strong>Email:</strong> {profile.Email}</p>
 				<p><strong>Address:</strong> {profile.Address}</p>
-				<p><strong>Account Balance:</strong> {profile.Account_Balance}</p>
+				<p><strong>Account Balance:</strong> ₹{formattedAccountBalance}</p>
 			</div>
 		</div>
 	);
