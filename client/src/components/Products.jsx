@@ -121,7 +121,7 @@ const Products = () => {
 											{product.Seller_Username}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{product.Last_Bid || product.Starting_Price}
+											{product.Last_bid || product.Starting_Price}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
 											{displayCountdown(product.Auction_End_Time)}

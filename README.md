@@ -264,6 +264,11 @@ BEGIN
 END$$
 DELIMITER ;
 
+test
+-- Update the Last_Bid field of an item in the items table
+UPDATE items SET Last_Bid = 150.00 WHERE Item_ID = 1;
+
+-- This update will trigger the execution of the trigger create_bid_entry_after_update
 
 
 
@@ -408,3 +413,38 @@ DELIMITER ;
 
 test
 SELECT CountItemsSoldByBuyer(1); -- Replace 1 with the desired buyer ID
+
+
+
+
+
+
+VIEW ALL TRIGGERS
+SELECT
+    TRIGGER_NAME,
+    EVENT_OBJECT_TABLE
+FROM
+    INFORMATION_SCHEMA.TRIGGERS;
+
+VIEW ALL PROCEDURES
+SELECT 
+  ROUTINE_SCHEMA,
+  ROUTINE_NAME
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_TYPE = 'PROCEDURE';
+
+
+
+-- Fetch all triggers in the database
+SHOW TRIGGERS;
+
+-- Fetch details of a specific trigger
+SHOW CREATE TRIGGER trg_name;
+
+
+
+-- Fetch all procedures in the database
+SHOW PROCEDURES;
+
+-- Fetch details of a specific procedure
+SHOW CREATE PROCEDURE proc_name;
