@@ -43,8 +43,9 @@ app.use("/api/transactions", transactionsRoute);
 app.use("/api/placedbids", bidsRoute);
 app.use("/api", buyerProfileRoute);
 
-// Socket.io events
-require("./socket")(socketIO);
+// // Define router for buyers and transactions
+// const buyersRouter = require('./routes/buyers');
+// app.use('/api', buyersRouter);
 
 // Start server
 http.listen(PORT, () => {
