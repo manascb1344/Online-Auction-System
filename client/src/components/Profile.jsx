@@ -11,7 +11,7 @@ const Profile = () => {
 
 		const fetchProfile = async () => {
 			try {
-				const response = await axios.get(`http://localhost:4000/api/profile/${userId}`);
+				const response = await axios.get(`http://localhost:4000/api/buyers/${userId}`);
 				setProfile(response.data);
 			} catch (error) {
 				setError('Error fetching profile. Please try again later.');
