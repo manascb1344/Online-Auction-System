@@ -66,10 +66,13 @@ To get started with the Online Auction System project, follow these steps:
 
 Check out the following resources to better understand the project:
 
-- **[Demo Video](link-to-demo-video)**: A video demonstration of the Online Auction System in action.
+- **[Demo Video](https://github.com/user-attachments/assets/b93b3b77-e1bc-4d35-8c14-638d192a6f94)**: A video demonstration of the Online Auction System in action.
 
-- **[PowerPoint Presentation](link-to-ppt)**: A presentation outlining the project details and architecture.
-- **[Project Report](link-to-project-report)**: Comprehensive report detailing the project implementation and findings.
+https://github.com/user-attachments/assets/b93b3b77-e1bc-4d35-8c14-638d192a6f94
+
+- **[PowerPoint Presentation](https://github.com/user-attachments/files/16395925/MiniProject_PPT_Online.Auction.System_Final_.pdf)**: A presentation outlining the project details and architecture.
+
+- **[Project Report](https://github.com/user-attachments/files/16395875/PROJECT.REPORT_FINAL.pdf)**: Comprehensive report detailing the project implementation and findings.
 
 ## Features
 
