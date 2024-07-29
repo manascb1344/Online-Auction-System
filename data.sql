@@ -15,7 +15,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping data for table dbms.auctions: ~50 rows (approximately)
-INSERT INTO Auctions (Auction_ID, Item_ID, Auction_Start_Time, Auction_End_Time, Auction_Status, Reserve_Price) VALUES
+INSERT INTO auctions (Auction_ID, Item_ID, Auction_Start_Time, Auction_End_Time, Auction_Status, Reserve_Price) VALUES
 	(1, 1, '2024-04-10 08:00:00', '2024-04-15 08:00:00', 'Active', 800.00),
 	(2, 2, '2024-04-11 10:00:00', '2024-04-16 10:00:00', 'Closed', 400.00),
 	(3, 3, '2024-04-12 12:00:00', '2024-04-17 12:00:00', 'Pending', 1500.00),
@@ -68,7 +68,7 @@ INSERT INTO Auctions (Auction_ID, Item_ID, Auction_Start_Time, Auction_End_Time,
 	(50, 50, '2024-05-29 10:00:00', '2024-06-03 10:00:00', 'Pending', 800.00);
 
 -- Dumping data for table dbms.bids: ~50 rows (approximately)
-INSERT INTO Bids (Bid_ID, Bidder_ID, Item_ID, Bid_Amount, Bid_Time, Bid_Status, Bid_Increment) VALUES
+INSERT INTO bids (Bid_ID, Bidder_ID, Item_ID, Bid_Amount, Bid_Time, Bid_Status, Bid_Increment) VALUES
 	(1, 1, 1, 700.00, '2024-05-09 14:30:00', 'Winning', 100.00),
 	(2, 2, 1, 650.00, '2024-05-09 15:45:00', 'Outbid', 100.00),
 	(3, 3, 2, 400.00, '2024-05-09 16:20:00', 'Winning', 50.00),
@@ -121,7 +121,7 @@ INSERT INTO Bids (Bid_ID, Bidder_ID, Item_ID, Bid_Amount, Bid_Time, Bid_Status, 
 	(50, 50, 25, 39000.00, '2024-05-12 16:00:00', 'Outbid', 2000.00);
 
 -- Dumping data for table dbms.buyers: ~50 rows (approximately)
-INSERT INTO Buyers (Buyer_ID, Username, Password, Email, Address, Account_Balance) VALUES
+INSERT INTO buyers (Buyer_ID, Username, Password, Email, Address, Account_Balance) VALUES
 	(1, 'ananya_gupta', 'password123', 'ananya.gupta@gmail.com', '123 Main Street, City, Uttar Pradesh, India', 5000.00),
 	(2, 'raj_sharma', 'p@ssw0rd!', 'raj.sharma@yahoo.com', '456 Elm Street, City, Maharashtra, India', 7000.00),
 	(3, 'rahul.kumar', 'securepass', 'rahul.kumar@outlook.com', '789 Oak Street, City, West Bengal, India', 3000.00),
@@ -174,7 +174,7 @@ INSERT INTO Buyers (Buyer_ID, Username, Password, Email, Address, Account_Balanc
 	(50, 'jyoti.11', 'jyoti@123', 'jyoti.11@yahoo.com', '567 Cedar Drive, City, Punjab, India', 5200.00);
 
 -- Dumping data for table dbms.items: ~50 rows (approximately)
-INSERT INTO Items (Item_ID, Seller_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES
+INSERT INTO items (Item_ID, Seller_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES
 	(1, 1, 'Handcrafted Pot', 'Handmade terracotta pot with floral motifs', 600.00, '2024-05-10 18:00:00', 'Home & Decor', NULL, 600.00),
 	(2, 2, 'Organic Spices', 'Assorted organic spices from Nilgiri farms', 350.00, '2024-05-12 12:00:00', 'Grocery', NULL, 350.00),
 	(3, 3, 'Designer Saree', 'Pure silk saree with zari work', 1200.00, '2024-05-11 20:00:00', 'Fashion', NULL, 1200.00),
@@ -227,7 +227,7 @@ INSERT INTO Items (Item_ID, Seller_ID, Item_Name, Description, Starting_Price, A
 	(50, 50, 'Wall Art', 'Canvas print of city skyline', 3000.00, '2024-06-23 13:00:00', 'Home & Decor', NULL, 3000.00);
 
 -- Dumping data for table dbms.sellers: ~50 rows (approximately)
-INSERT INTO Sellers (Seller_ID, Username, Password, Email, Address, Account_Balance) VALUES
+INSERT INTO sellers (Seller_ID, Username, Password, Email, Address, Account_Balance) VALUES
 	(1, 'indian_crafts', 'crafty@123!', 'indian_crafts@gmail.com', '123 Main Street, City, Uttar Pradesh, India', 10000.00),
 	(2, 'organic_farm', 'organic4life!', 'organic_farm@yahoo.com', '456 Elm Street, City, Maharashtra, India', 8500.00),
 	(3, 'fashion_hub', 'fashionista2023', 'fashion_hub@outlook.com', '789 Oak Street, City, West Bengal, India', 12000.00),
@@ -280,7 +280,7 @@ INSERT INTO Sellers (Seller_ID, Username, Password, Email, Address, Account_Bala
 	(50, 'kitchen_kraft', 'kraftykitchen123!', 'kitchen_kraft@yahoo.com', '456 Elm Drive, City, Karnataka, India', 9100.00);
 
 -- Dumping data for table dbms.transactions: ~50 rows (approximately)
-INSERT INTO Transactions (Transaction_ID, Buyer_ID, Seller_ID, Item_ID, Transaction_Amount, Transaction_Time, Payment_Method, Transaction_Status) VALUES
+INSERT INTO transactions (Transaction_ID, Buyer_ID, Seller_ID, Item_ID, Transaction_Amount, Transaction_Time, Payment_Method, Transaction_Status) VALUES
 	(1, 1, 11, 1, 900.00, '2024-05-15 08:30:00', 'Cash', 'Completed'),
 	(2, 2, 12, 2, 450.00, '2024-05-16 10:30:00', 'Credit Card', 'Completed'),
 	(3, 3, 13, 3, 1600.00, '2024-05-17 12:30:00', 'UPI', 'Completed'),
