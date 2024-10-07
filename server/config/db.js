@@ -1,19 +1,21 @@
-const mysql = require("mysql2");
+const { Client } = require("pg");
 
-const connection = mysql.createConnection({
-    host: "127.0.0.1",  // or "localhost"
-    user: "root",
-    password: "1m2m3m4m5m",
-    database: "dbms",
-    port: 3306  // Ensure this is correct
+const client = new Client({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
 });
 
-connection.connect((err) => {
+// Connect to the database
+client.connect((err) => {
     if (err) {
         console.error("Error connecting: ", err.stack);
-        return;
+    } else {
+        console.log("Connected successfully");
     }
-    console.log("Connected as id " + connection.threadId);
 });
 
-connection.end();
+// Export the client for use in other files
+module.exports = client;

@@ -20,12 +20,6 @@ const transactionsRoute = require("./routes/transactions");
 const bidsRoute = require("./routes/bids");
 const buyerProfileRoute = require("./routes/buyerProfile");
 
-// Socket.io setup
-const socketIO = require("socket.io")(http, {
-	cors: {
-		origin: "http://localhost:3000",
-	},
-});
 
 // Middleware
 app.use(cors());
