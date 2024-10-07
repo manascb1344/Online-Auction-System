@@ -17,8 +17,8 @@ import Bids from "./Admin/Bids";
 import AccessDenied from "./components/AccessDenied";
 import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
-import Items from "./PowerBI/Items";
-import InvoiceGenerator from "./PowerBI/InvoiceGenerator";
+// import Items from "./PowerBI/Items";
+// import InvoiceGenerator from "./PowerBI/InvoiceGenerator";
 
 const socket = socketIO.connect("http://localhost:4000");
 
