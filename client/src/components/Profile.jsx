@@ -12,6 +12,7 @@ const Profile = () => {
 		const fetchProfile = async () => {
 			try {
 				const response = await axios.get(`http://localhost:4000/api/buyers/${userId}`);
+				// console.log("response", response.data);
 				setProfile(response.data);
 			} catch (error) {
 				setError('Error fetching profile. Please try again later.');
@@ -37,7 +38,7 @@ const Profile = () => {
 	}
 
 	let formattedAccountBalance = '';
-	const accountBalance = Number(profile.Account_Balance);
+	const accountBalance = Number(profile.account_balance);
 	if (!isNaN(accountBalance)) {
 		formattedAccountBalance = accountBalance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 	} else {
@@ -48,9 +49,9 @@ const Profile = () => {
 		<div className="max-w-md mx-auto mt-8 bg-white p-6 rounded-lg shadow-md">
 			<h2 className="text-xl font-semibold text-center mb-4">Profile</h2>
 			<div className="text-left">
-				<p><strong>Username:</strong> {profile.Username}</p>
-				<p><strong>Email:</strong> {profile.Email}</p>
-				<p><strong>Address:</strong> {profile.Address}</p>
+				<p><strong>Username:</strong> {profile.username}</p>
+				<p><strong>Email:</strong> {profile.email}</p>
+				<p><strong>Address:</strong> {profile.address}</p>
 				<p><strong>Account Balance:</strong> ₹{formattedAccountBalance}</p>
 			</div>
 		</div>

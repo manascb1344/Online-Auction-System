@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Pool } = require("pg");
-const pool = new Pool(require("../config/db"));
+const pool = require("../config/db");
 
 router.get("/", async (req, res) => {
 	console.log("Received API request");

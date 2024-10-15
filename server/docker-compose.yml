@@ -16,5 +16,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - auction_network
+
+  pgadmin:
+    container_name: auction_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - auction_network
+
 volumes:
   postgres_data:
+
+networks:
+  auction_network:
+    driver: bridge

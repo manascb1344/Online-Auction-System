@@ -4,6 +4,7 @@ import axios from "axios";
 
 const BidProduct = () => {
 	const { name, price } = useParams();
+	console.log(name, price, localStorage.getItem("username"));
 	const [amount, setAmount] = useState(price);
 	const navigate = useNavigate();
 	const [error, setError] = useState(false);

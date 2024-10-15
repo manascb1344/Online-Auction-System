@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../config/db.js");
+const pool = require("../config/db.js");
 
 router.use(express.json());
 
@@ -30,8 +30,8 @@ router.post("/", async (req, res) => {
         const values = [username];
 
         console.log(`Executing query: ${query}`);
-        // Execute the query
-        const result = await connection.query(query, values);
+        // Execute the query using pool
+        const result = await pool.query(query, values);
 
         if (result.rows.length === 0) {
             console.log(`User not found: ${username}`);
