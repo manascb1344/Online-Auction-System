@@ -25,7 +25,7 @@ This project leverages a variety of technologies to deliver a robust online auct
   - **Express.js**: Web application framework for Node.js to handle HTTP requests and routing.
 
 - **Database**:
-  - **MariaDB**: Relational SQL database management system for storing and managing data related to users, items, bids, auctions, and transactions.
+  - **PostgreSQL**: Relational SQL database management system for storing and managing data related to users, items, bids, auctions, and transactions.
 
 - **Data Visualization**:
   - **Power BI**: For visualizing and analyzing data in real-time with interactive reports and dashboards.
@@ -33,34 +33,18 @@ This project leverages a variety of technologies to deliver a robust online auct
 - **Development Tools**:
   - **Git**: Version control system for tracking changes in source code.
 
-## Getting Started
+## Features
 
-To get started with the Online Auction System project, follow these steps:
+- **User Profiles**: Manage and view user profiles with complete transaction history.
+- **Item Listings**: View and list items for auction with detailed information.
+- **Real-Time Bidding**: Track and place bids in real-time.
+- **Auction Management**: Start and manage auctions with reserve prices and status updates.
+- **Transaction Processing**: Record and manage transactions post-auction.
 
-1. **Clone the Repository**
-   ```bash
-   https://github.com/manascb1344/Online-Auction-System.git
-   cd Online-Auction-System
-   // In Same Terminal Window
-   cd client
-   // In New Terminal Window
-   cd server
-   ```
+## Documentation & Setup
 
-2. **Install Dependencies**
-   ```bash
-   // In both Terminal Windows
-   npm install
-   ```
-
-3. **Set Up MariaDB**
-   - Ensure MariaDB is installed and running on your system.
-   - Create a database and configure the connection settings in the project.
-
-4. **Run the Application**
-   ```bash
-   npm start
-   ```
+- For the setup instructions, please refer to the [Setup Guide](./SETUP.md).
+- For contributing guidelines, please see the [Contributing Guide](./CONTRIBUTING.md).
 
 ## Demo & Documentation
 
@@ -73,11 +57,3 @@ https://github.com/user-attachments/assets/b93b3b77-e1bc-4d35-8c14-638d192a6f94
 - **[PowerPoint Presentation](https://github.com/user-attachments/files/16395925/MiniProject_PPT_Online.Auction.System_Final_.pdf)**: A presentation outlining the project details and architecture.
 
 - **[Project Report](https://github.com/user-attachments/files/16395875/PROJECT.REPORT_FINAL.pdf)**: Comprehensive report detailing the project implementation and findings.
-
-## Features
-
-- **User Profiles**: Manage and view user profiles with complete transaction history.
-- **Item Listings**: View and list items for auction with detailed information.
-- **Real-Time Bidding**: Track and place bids in real-time.
-- **Auction Management**: Start and manage auctions with reserve prices and status updates.
-- **Transaction Processing**: Record and manage transactions post-auction.

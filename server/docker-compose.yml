@@ -1,0 +1,20 @@
+version: '3'
+services:
+  postgres:
+    container_name: auction_postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: auction_user
+      POSTGRES_PASSWORD: auction_password
+      POSTGRES_DB: auction_system
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auction_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  postgres_data:
