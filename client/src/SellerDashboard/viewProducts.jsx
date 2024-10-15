@@ -12,11 +12,13 @@ const ViewProducts = () => {
 		const fetchProducts = async () => {
 			try {
 				const sellerID = localStorage.getItem("seller_id");
+				console.log("Fetching products for seller ID:", sellerID);
 				const response = await fetch(`http://localhost:4000/api/seller/products/${sellerID}`);
 				if (!response.ok) {
 					throw new Error("Failed to fetch products");
 				}
 				const data = await response.json();
+				console.log("Fetched data:", data);
 				setProducts(data);
 				setLoading(false);
 			} catch (error) {
@@ -38,6 +40,8 @@ const ViewProducts = () => {
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
 	const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+	console.log("Current products:", currentProducts);
 
 	const nextPage = () => setCurrentPage(currentPage + 1);
 	const prevPage = () => setCurrentPage(currentPage - 1);
@@ -72,20 +76,27 @@ const ViewProducts = () => {
 								<tr>
 									<td colSpan="9">Error: {error}</td>
 								</tr>
+							) : currentProducts.length === 0 ? (
+								<tr>
+									<td colSpan="9">No products found</td>
+								</tr>
 							) : (
-								currentProducts.map((product) => (
-									<tr key={product.Item_ID}>
-										<td className="px-4 py-2 border border-gray-700">{product.Item_ID}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Seller_ID}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Item_Name}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Description}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Starting_Price}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Auction_End_Time}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Category}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Last_Bidder || "None"}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Last_bid || "None"}</td>
-									</tr>
-								))
+								currentProducts.map((product) => {
+									console.log("Rendering product:", product);
+									return (
+										<tr key={`${product.item_id}-${product.seller_id}`}>
+											<td className="px-4 py-2 border border-gray-700">{product.item_id}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.seller_id}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.item_name}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.description}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.starting_price}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.auction_end_time}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.category}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.last_bidder || "None"}</td>
+											<td className="px-4 py-2 border border-gray-700">{product.last_bid || "None"}</td>
+										</tr>
+									);
+								})
 							)}
 						</tbody>
 					</table>

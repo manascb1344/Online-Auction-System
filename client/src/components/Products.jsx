@@ -3,7 +3,7 @@ import EditButton from "./EditButton";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const Products = () => {
-	const [products, setProducts] = useState(null);
+	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -17,7 +17,13 @@ const Products = () => {
 					throw new Error("Failed to fetch products");
 				}
 				const data = await response.json();
-				const activeProducts = data.items.filter(product => product.Auction_Status === 'Active' && new Date(product.Auction_End_Time) > new Date());
+				// console.log("data", data.items[0]);
+				const activeProducts = data.items.filter(product => 
+					product.auction_status === 'Active' 
+					// && 
+					// new Date(product.auction_end_time) > new Date()
+				);
+				// console.log("activeProducts", activeProducts);
 				setProducts(activeProducts);
 				setLoading(false);
 			} catch (error) {
@@ -49,13 +55,12 @@ const Products = () => {
 		} else {
 			return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 		}
-
 	};
 
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
 
-	const currentProducts = products ? products.slice(indexOfFirstProduct, indexOfLastProduct) : [];
+	const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
 	const calculateCountdown = (endTime) => {
 		const now = new Date();
@@ -63,11 +68,12 @@ const Products = () => {
 		const diff = end - now;
 		return diff;
 	};
-	currentProducts.sort((a, b) => calculateCountdown(a.Auction_End_Time) - calculateCountdown(b.Auction_End_Time));
-
+	currentProducts.sort((a, b) => calculateCountdown(a.auction_end_time) - calculateCountdown(b.auction_end_time));
 
 	const nextPage = () => setCurrentPage(currentPage + 1);
 	const prevPage = () => setCurrentPage(currentPage - 1);
+	// console.log("Current products length:", currentProducts.length);
+	// console.log("Total products:", products.length);
 
 	return (
 		<div className="font-poppins min-h-screen bg-gray-100">
@@ -102,6 +108,12 @@ const Products = () => {
 										Error: {error}
 									</td>
 								</tr>
+							) : currentProducts.length === 0 ? (
+								<tr>
+									<td colSpan="7" className="py-4 px-6 text-center">
+										No products available
+									</td>
+								</tr>
 							) : (
 								currentProducts.map((product, index) => (
 									<tr
@@ -109,22 +121,22 @@ const Products = () => {
 										className={`${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100`}
 									>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{product.Item_Name}
+											{product.item_name}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{product.Starting_Price}
+											{product.starting_price}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{product.Last_Bidder || "None"}
+											{product.last_bidder || "None"}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{product.Seller_Username}
+											{product.seller_username}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{product.Last_bid || product.Starting_Price}
+											{product.last_bid || product.starting_price}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
-											{displayCountdown(product.Auction_End_Time)}
+											{displayCountdown(product.auction_end_time)}
 										</td>
 										<td className="py-4 px-6 border-b border-gray-200">
 											<EditButton product={product} />
@@ -150,7 +162,7 @@ const Products = () => {
 					<button
 						className="px-3 py-1 rounded bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none"
 						onClick={nextPage}
-						disabled={currentProducts.length < productsPerPage}
+						disabled={indexOfLastProduct >= products.length}
 					>
 						<FiChevronRight />
 					</button>

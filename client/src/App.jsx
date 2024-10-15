@@ -1,7 +1,6 @@
 // App.js
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import socketIO from "socket.io-client";
 import Nav from "./components/Nav";
 import Home from "./components/Home";
 import BidProduct from "./components/BidProduct";
@@ -19,8 +18,6 @@ import NotFound from "./components/NotFound";
 import Profile from "./components/Profile";
 // import Items from "./PowerBI/Items";
 // import InvoiceGenerator from "./PowerBI/InvoiceGenerator";
-
-const socket = socketIO.connect("http://localhost:4000");
 
 function App() {
 	const [loading, setLoading] = useState(true);
@@ -55,7 +52,7 @@ function App() {
 
 	return (
 		<div>
-			<Nav header="Bid Items" socket={socket} />
+			<Nav header="Bid Items" />
 			<Routes>
 				<Route path="/" element={<LoginForm setForceRefresh={setForceRefresh} />} />
 				<Route
@@ -72,7 +69,7 @@ function App() {
 					path="/products/bid/:name/:price"
 					element={
 						isAuthenticated() && isBuyer() ? (
-							<BidProduct socket={socket} />
+							<BidProduct />
 						) : (
 							<Navigate to="/login" />
 						)
@@ -82,7 +79,7 @@ function App() {
 					path="/userprofile"
 					element={
 						isAuthenticated() && isBuyer() ? (
-							<Profile socket={socket} />
+							<Profile />
 						) : (
 							<Navigate to="/login" />
 						)

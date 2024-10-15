@@ -1,5 +1,5 @@
 const express = require("express");
-const connection = require("../config/db");
+const pool = require("../config/db");
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
 	const currentTime = new Date();
 
 	try {
-		const resultsItem = await connection.query(
+		const resultsItem = await pool.query(
 			"SELECT MAX(Item_ID) AS max_item_id FROM Items"
 		);
 
@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 			auctionStatus = "Active";
 		}
 
-		await connection.query(
+		await pool.query(
 			"INSERT INTO Items (Seller_ID, Item_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
 			[
 				sellerID,

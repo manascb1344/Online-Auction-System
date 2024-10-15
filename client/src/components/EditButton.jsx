@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 const EditButton = ({ product }) => {
 	const navigate = useNavigate();
+	// console.log(product);
 	const handleClick = () =>
-		navigate(`/products/bid/${product.Item_Name}/${product.Last_bid}`);
+		navigate(`/products/bid/${product.item_name}/${product.last_bid}`);
 
 	return (
 		<svg

@@ -74,7 +74,7 @@ const AddsellerProd = () => {
 						className="w-full px-4 py-2 rounded border border-gray-300 mb-4 outline-none"
 					/>
 
-					<label htmlFor="auctionStartTime" className="mb-2"> {/* New label for Auction Start Time */}
+					<label htmlFor="auctionStartTime" className="mb-2">
 						Auction Start Time
 					</label>
 					<input
