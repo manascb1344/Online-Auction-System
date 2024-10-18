@@ -1,32 +1,30 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const pool = require("../config/db");
+const {
+  getBuyerById,
+  getTransactionsByBuyerId,
+} = require("../utils/dbHelpers");
+const asyncHandler = require("../utils/asyncHandler");
 
-router.get('/api/buyers/:id', async (req, res) => {
-  const buyerId = req.params.id;
-
-  try {
-    const { rows } = await pool.query('SELECT * FROM Buyers WHERE Buyer_ID = $1', [buyerId]);
-    if (rows.length === 0) {
-      res.status(404).json({ error: 'Buyer not found' });
-    } else {
-      res.json(rows[0]);
+router.get(
+  "/api/buyers/:id",
+  asyncHandler(async (req, res) => {
+    const buyerId = req.params.id;
+    const buyer = await getBuyerById(buyerId);
+    if (!buyer) {
+      return res.status(404).json({ error: "Buyer not found" });
     }
-  } catch (error) {
-    console.error('Error fetching buyer:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+    res.json(buyer);
+  })
+);
 
-// Endpoint to fetch transactions by buyer ID
-router.get('/api/transactions', async (req, res) => {
-  const buyerId = req.query.buyer_id;
+router.get(
+  "/api/transactions",
+  asyncHandler(async (req, res) => {
+    const buyerId = req.query.buyer_id;
+    const transactions = await getTransactionsByBuyerId(buyerId);
+    res.json(transactions);
+  })
+);
 
-  try {
-    const { rows } = await pool.query('SELECT * FROM Transactions WHERE Buyer_ID = $1', [buyerId]);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching transactions:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+module.exports = router;
