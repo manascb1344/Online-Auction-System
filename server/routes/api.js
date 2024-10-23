@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
+const asyncHandler = require("../utils/asyncHandler");
 
-router.get("/", async (req, res) => {
-	// console.log("Received API request");
-	try {
-		const query = `
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
+    const query = `
 			SELECT items.*, 
 				   sellers.Username AS Seller_Username, 
 				   sellers.Email AS Seller_Email, 
@@ -16,13 +17,10 @@ router.get("/", async (req, res) => {
 			JOIN sellers ON items.Seller_ID = sellers.Seller_ID 
 			JOIN auctions ON items.Item_ID = auctions.Item_ID;
 		`;
-		const { rows } = await pool.query(query);
-		// console.log("Received results from database:", rows);
-		res.json({ items: rows });
-	} catch (err) {
-		console.error("Error fetching items from database:", err);
-		res.status(500).json({ error: "Internal Server Error" });
-	}
-});
+    const { rows } = await pool.query(query);
+    // console.log("Received results from database:", rows);
+    res.json({ items: rows });
+  })
+);
 
 module.exports = router;
