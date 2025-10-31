@@ -1,16 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/db");
+const queries = require("./sqlQueries");
 
 router.get("/:sellerId", (req, res) => {
 	const { sellerId } = req.params;
 
-	const query = `
-    SELECT * FROM items
-    WHERE seller_id = ?
-  `;
-
-	connection.query(query, [sellerId], (err, results) => {
+		connection.query(queries.SELECT_ITEMS_BY_SELLER, [sellerId], (err, results) => {
 		if (err) {
 			console.error("Error:", err);
 			return res

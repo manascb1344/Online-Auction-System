@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/db");
+const queries = require("./sqlQueries");
 
 router.get("/:id", (req, res) => {
 	console.log("Received request to fetch seller by ID");
 	const sellerId = req.params.id;
-	connection.query(
-		"SELECT name FROM sellers WHERE Seller_ID = ?",
-		[sellerId],
-		(err, results) => {
+	connection.query(queries.SELECT_SELLER_NAME_BY_ID, [sellerId], (err, results) => {
 			if (err) {
 				console.error("Error fetching seller from database:", err);
 				res.status(500).json({ error: "Internal Server Error" });

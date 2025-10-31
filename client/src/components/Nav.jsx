@@ -78,12 +78,21 @@ const Nav = ({ header, socket }) => {
 							</div>
 						)}
 						{userType === "buyer" && (
-							<button
-								className="px-4 py-2 bg-blue-500 text-white rounded-md"
-								onClick={() => navigate("/products")}
-							>
-								View Products
-							</button>
+							<div className="flex">
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
+									onClick={() => navigate("/products")}
+								>
+									View Products
+								</button>
+								<button
+									className="px-4 py-2 bg-blue-500 text-white rounded-md mr-2"
+									onClick={() => navigate("/userprofile")}
+								>
+									UserProfile
+								</button>
+
+							</div>
 						)}
 						{userType === "admin" && (
 							<div className="flex">

@@ -83,7 +83,7 @@ const ViewProducts = () => {
 										<td className="px-4 py-2 border border-gray-700">{product.Auction_End_Time}</td>
 										<td className="px-4 py-2 border border-gray-700">{product.Category}</td>
 										<td className="px-4 py-2 border border-gray-700">{product.Last_Bidder || "None"}</td>
-										<td className="px-4 py-2 border border-gray-700">{product.Last_Bid}</td>
+										<td className="px-4 py-2 border border-gray-700">{product.Last_bid || "None"}</td>
 									</tr>
 								))
 							)}
