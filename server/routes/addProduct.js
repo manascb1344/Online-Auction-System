@@ -1,5 +1,6 @@
 const express = require("express");
 const pool = require("../config/db");
+const queries = require("./sqlQueries");
 
 const router = express.Router();
 
@@ -15,9 +16,7 @@ router.post("/", (req, res) => {
 
 	const currentTime = new Date();
 
-	pool.query(
-		"SELECT MAX(Item_ID) AS maxItemID FROM Items",
-		(error, resultsItem) => {
+	pool.query(queries.SELECT_MAX_ITEM_ID, (error, resultsItem) => {
 			if (error) {
 				console.error("Error retrieving max item ID:", error);
 				return res.status(500).json({ error: "Failed to add product" });
@@ -39,7 +38,7 @@ router.post("/", (req, res) => {
 			}
 
 			pool.query(
-				"INSERT INTO Items (Seller_ID, Item_ID, Item_Name, Description, Starting_Price, Auction_End_Time, Category, Last_Bidder, Last_Bid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				queries.INSERT_ITEM,
 				[
 					sellerID,
 					itemID,
@@ -56,10 +55,7 @@ router.post("/", (req, res) => {
 						console.error("Error adding product:", error);
 						return res.status(500).json({ error: "Failed to add product" });
 					}
-
-					pool.query(
-						"SELECT MAX(Auction_ID) AS maxAuctionID FROM Auctions",
-						(error, resultsAuction) => {
+					pool.query(queries.SELECT_MAX_AUCTION_ID, (error, resultsAuction) => {
 							if (error) {
 								console.error("Error retrieving max auction ID:", error);
 								return res.status(500).json({ error: "Failed to add product" });
@@ -72,7 +68,7 @@ router.post("/", (req, res) => {
 							const auctionID = maxAuctionID + 1;
 
 							pool.query(
-								"INSERT INTO Auctions (Auction_ID, Item_ID, Auction_Start_Time, Auction_End_Time, Auction_Status, Reserve_Price) VALUES (?, ?, ?, ?, ?, ?)",
+								queries.INSERT_AUCTION,
 								[
 									auctionID,
 									itemID,

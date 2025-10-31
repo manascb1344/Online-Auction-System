@@ -2,13 +2,14 @@
 const express = require('express');
 const router = express.Router();
 const connection = require("../config/db");
+const queries = require("./sqlQueries");
 
 
 app.get('/api/buyers/:id', async (req, res) => {
   const buyerId = req.params.id;
 
   try {
-    const buyer = await pool.query('SELECT * FROM Buyers WHERE Buyer_ID = ?', [buyerId]);
+    const buyer = await pool.query(queries.SELECT_BUYER_BY_ID, [buyerId]);
     res.json(buyer[0]);
   } catch (error) {
     console.error('Error fetching buyer:', error);
@@ -21,7 +22,7 @@ app.get('/api/transactions', async (req, res) => {
   const buyerId = req.query.buyer_id;
 
   try {
-    const transactions = await pool.query('SELECT * FROM Transactions WHERE Buyer_ID = ?', [buyerId]);
+    const transactions = await pool.query(queries.SELECT_TRANSACTIONS_BY_BUYER, [buyerId]);
     res.json(transactions);
   } catch (error) {
     console.error('Error fetching transactions:', error);

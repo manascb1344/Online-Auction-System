@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/db");
+const queries = require("./sqlQueries");
 
 router.use(express.json());
 
@@ -10,10 +11,7 @@ router.post("/", async (req, res) => {
 	try {
 		await connection
 			.promise()
-			.query(
-				"UPDATE items SET Last_Bidder = ?, Last_Bid = ? WHERE Item_Name = ?",
-				[last_bidder, amount, itemName]
-			);
+				.query(queries.UPDATE_ITEM_LAST_BID, [last_bidder, amount, itemName]);
 
 		res.status(200).json({ message: "Bid placed successfully" });
 	} catch (error) {

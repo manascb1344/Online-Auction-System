@@ -1,12 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/db");
+const queries = require("./sqlQueries");
 
 router.get("/", (req, res) => {
 	// console.log("Received API request");
-	connection.query(
-		"SELECT items.*, sellers.Username AS Seller_Username, sellers.Email AS Seller_Email, sellers.Address AS Seller_Address, sellers.Account_Balance AS Seller_Account_Balance, auctions.Auction_Status FROM items JOIN sellers ON items.Seller_ID = sellers.Seller_ID JOIN auctions ON items.Item_ID = auctions.Item_ID;",
-		(err, results) => {
+	connection.query(queries.GET_ITEMS_WITH_SELLER_AUCTION, (err, results) => {
 			if (err) {
 				console.error("Error fetching items from database:", err);
 				res.status(500).json({ error: "Internal Server Error" });

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const connection = require("../config/db");
+const queries = require("./sqlQueries");
 
 router.use(express.json());
 
@@ -19,10 +20,7 @@ router.post("/", async (req, res) => {
 			return res.status(400).json({ message: "Invalid user type" });
 		}
 
-		connection.query(
-			`SELECT * FROM ${tableName} WHERE Username = ?`,
-			[username],
-			async (error, results) => {
+		connection.query(queries.getUserByUsername(tableName), [username], async (error, results) => {
 				if (error) {
 					console.error(error);
 					return res
