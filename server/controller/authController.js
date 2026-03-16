@@ -24,8 +24,8 @@ module.exports = {
 
     console.log(`Using table: ${tableName}`);
 
-    // Use parameterized query syntax for PostgreSQL
-    const query = `SELECT * FROM ${tableName} WHERE username = $1`;
+    // Use parameterized query syntax for MySQL
+    const query = `SELECT * FROM ${tableName} WHERE username = ?`;
     const values = [username];
 
     console.log(`Executing query: ${query}`);
@@ -40,8 +40,7 @@ module.exports = {
     const user = result.rows[0];
     console.log(`User found: ${JSON.stringify(user)}`);
 
-    // Password comparison logic
-    const isAuthenticated = password === user.password;
+    const isAuthenticated = password === user.Password;
     console.log(`Authentication result: ${isAuthenticated}`);
 
     res.json({

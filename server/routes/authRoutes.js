@@ -4,6 +4,6 @@ const authController = require("../controller/authController");
 
 router.use(express.json());
 
-router.get("/", authController.login);
+router.post("/", authController.login);
 
 module.exports = router;
