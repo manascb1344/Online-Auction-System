@@ -25,7 +25,7 @@ This project leverages a variety of technologies to deliver a robust online auct
   - **Express.js**: Web application framework for Node.js to handle HTTP requests and routing.
 
 - **Database**:
-  - **PostgreSQL**: Relational SQL database management system for storing and managing data related to users, items, bids, auctions, and transactions.
+  - **MySQL**: Relational SQL database management system (running in Docker) for storing and managing data related to users, items, bids, auctions, and transactions.
 
 - **Data Visualization**:
   - **Power BI**: For visualizing and analyzing data in real-time with interactive reports and dashboards.

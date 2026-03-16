@@ -1,6 +1,6 @@
 # Online Auction System - Setup Guide
 
-This guide will help you set up the Online Auction System, which includes a React frontend in the `client` directory and a backend powered by Node.js and PostgreSQL in the `server` directory, with PostgreSQL running in a Docker container.
+This guide will help you set up the Online Auction System with MySQL running in Docker.
 
 ## Prerequisites
 
@@ -9,186 +9,155 @@ Ensure that the following are installed on your machine:
 - **Node.js** (v14 or higher)
 - **npm** or **pnpm** (recommended)
 - **Git** (for version control)
-- **Docker** (for PostgreSQL Container)
+- **Docker** & **Docker Compose** (for MySQL container)
 
 ## Project Structure
 
-- **client/**: Contains the React frontend.
-- **server/**: Contains the Node.js backend (Express.js).
-- **database/**: SQL scripts and schema for PostgreSQL.
+- **client/**: React frontend
+- **server/**: Node.js backend (Express.js)
+- **database/**: SQL scripts for MySQL
 
-## 1. Clone the Repository
+## Quick Start
 
-First, clone the project repository:
+### 1. Start MySQL with Docker
+
+From the project root:
 
 ```bash
-git clone https://github.com/manascb1344/Online-Auction-System.git
-cd Online-Auction-System
+docker-compose up -d
 ```
 
-## 2. Set Up the Frontend
+This will start:
+- MySQL 8.0 on port 3306
+- phpMyAdmin on port 8080 (optional, for database management)
 
-The frontend is built with React and located in the `client` directory.
+The database will be automatically initialized with the schema and sample data from `database/dbms.sql`.
 
-### Steps:
+### 2. Set Up the Backend
 
-1. Navigate to the `client` folder:
+```bash
+cd server
+pnpm install
+pnpm start
+```
 
-   ```bash
-   cd client
-   ```
+The backend will run on http://localhost:4000
 
-2. Install dependencies:
+### 3. Set Up the Frontend
 
-   ```bash
-   pnpm install
-   ```
+In a new terminal:
 
-   Or using npm:
+```bash
+cd client
+pnpm install
+pnpm start
+```
 
-   ```bash
-   npm install
-   ```
+The frontend will run on http://localhost:3000
 
-3. Start the development server:
+## Database Configuration
 
-   ```bash
-   pnpm start
-   ```
+### Environment Variables (Server)
 
-   Or using npm:
+The server uses these defaults (already set in `server/.env`):
 
-   ```bash
-   npm start
-   ```
+```
+DB_HOST=localhost
+DB_USER=auction_user
+DB_PASSWORD=auction_password
+DB_NAME=auction_system
+DB_PORT=3306
+```
 
-The React app should now be running on `http://localhost:3000`.
+For Docker setup, these match the docker-compose configuration.
 
-## 3. Set Up the Backend
+### MySQL Connection Details
 
-The backend uses Node.js with Express.js and PostgreSQL. It's located in the `server` directory.
+- **Host**: localhost (or `mysql` if connecting from another Docker container)
+- **Port**: 3306
+- **Database**: auction_system
+- **Username**: auction_user
+- **Password**: auction_password
+- **Root Password**: root_password
 
-### Steps:
+### phpMyAdmin Access
 
-1. Navigate to the `server` folder:
+If you started the docker-compose with phpMyAdmin:
 
-   ```bash
-   cd ../server
-   ```
+- URL: http://localhost:8080
+- Server: mysql
+- Username: root or auction_user
+- Password: root_password or auction_password
 
-2. Install dependencies:
+## Manual Database Setup (if needed)
 
-   ```bash
-   pnpm install
-   ```
+If you need to re-initialize the database:
 
-   Or using npm:
+```bash
+# Stop and remove the container
+docker-compose down -v
 
-   ```bash
-   npm install
-   ```
+# Start fresh
+docker-compose up -d
 
+# Or manually run SQL
+docker cp database/dbms.sql auction_mysql:/tmp/
+docker exec -i auction_mysql mysql -u root -proot_password auction_system < database/dbms.sql
+```
 
-## 4. Docker Setup for PostgreSQL
+## Troubleshooting
 
-We will use Docker to create and manage the PostgreSQL database, naming the container `auction_postgres`.
+### Port already in use
 
-### Steps:
+If port 3306 is already in use:
 
-1. Create a `docker-compose.yml` file in the root directory with the following content:
+```bash
+# Find what's using port 3306
+sudo lsof -i :3306
 
-   ```yaml
-   version: '3'
-   services:
-     postgres:
-       container_name: auction_postgres
-       image: postgres:latest
-       environment:
-         POSTGRES_USER: auction_user
-         POSTGRES_PASSWORD: auction_password
-         POSTGRES_DB: auction_system
-       ports:
-         - "5432:5432"
-       volumes:
-         - postgres_data:/var/lib/postgresql/data
-       healthcheck:
-         test: ["CMD-SHELL", "pg_isready -U auction_user"]
-         interval: 10s
-         timeout: 5s
-         retries: 5
-   volumes:
-     postgres_data:
-   ```
+# Or change the port in docker-compose.yml
+ports:
+  - "3307:3306"  # Use 3307 on host instead
+```
 
-2. Run the PostgreSQL container:
+Then update `server/.env`:
+```
+DB_PORT=3307
+```
 
-   ```bash
-   docker-compose up -d
-   ```
+### Database connection refused
 
-3. Verify that the PostgreSQL container is running:
-
+1. Make sure Docker container is running:
    ```bash
    docker ps
    ```
 
-   You should see a running container with the name `auction_postgres`.
-
-## 5. Insert Data into PostgreSQL
-
-To create tables and insert data into the PostgreSQL database, we will run the SQL scripts inside the `auction_postgres` container.
-
-### Steps:
-1. Go to the Project root directory
+2. Check container logs:
    ```bash
-   cd ..
-   ```
-2. Copy the SQL schema and data script (`dbms.sql`) into the running PostgreSQL container:
-
-   ```bash
-      docker cp ./database/dbms.sql auction_postgres:/dbms.sql
+   docker logs auction_mysql
    ```
 
-3. Access the PostgreSQL container:
+3. Wait for MySQL to fully start (first run may take 30-60 seconds)
 
-   ```bash
-   docker exec -it auction_postgres bash
-   ```
+### Reset everything
 
-4. Run the SQL script inside the container to create tables and insert data:
+```bash
+docker-compose down -v  # Remove container and data
+docker-compose up -d    # Start fresh
+```
 
-   ```bash
-   psql -U auction_user -d auction_system -f /dbms.sql
-   ```
+## Available Scripts
 
-5. Exit the container:
+### Backend
+- `pnpm start` - Start production server
+- `pnpm dev` - Start with nodemon (auto-reload)
 
-   ```bash
-   exit
-   ```
+### Frontend
+- `pnpm start` - Start development server
+- `pnpm build` - Build for production
 
-## 6. Start the Backend Server
+## Notes
 
-   Make sure PostgreSQL is running via Docker, then start the Node.js backend:
-
-   ```bash
-   pnpm start
-   ```
-
-   Or using npm:
-
-   ```bash
-   npm start
-   ```
-
-   The backend server should now be running on http://localhost:5000.
-
-7. Running Both Frontend and Backend Together
-
-   Ensure both the React frontend and the backend server are running simultaneously. If needed, configure proxying in the frontend for API requests by adding the following in client/package.json:
-
-   ```json
-   "proxy": "http://localhost:5000"
-   ```
-
-   This will proxy requests from the frontend to the backend.
+- The MySQL data is persisted in a Docker volume (`mysql_data`)
+- The SQL schema is automatically executed on first container startup
+- Sample data (50 buyers, 50 sellers, 50 items, etc.) is included

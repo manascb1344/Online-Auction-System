@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mysql:
+    container_name: auction_mysql
+    image: mysql:8.0
+    command: --lower-case-table-names=1
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: auction_system
+      MYSQL_USER: auction_user
+      MYSQL_PASSWORD: auction_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - auction_network
+
+  phpmyadmin:
+    container_name: auction_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - auction_network
+
+volumes:
+  mysql_data:
+
+networks:
+  auction_network:
+    driver: bridge
