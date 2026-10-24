@@ -6,12 +6,6 @@ import { useAuth } from "../auth/AuthContext";
 import { homeFor } from "../auth/roles";
 import ErrorAlert from "../components/ErrorAlert";
 
-const DEMO_ACCOUNTS = [
-  { role: "Buyer", username: "buyer1", password: "Buyer123!" },
-  { role: "Seller", username: "seller1", password: "Seller123!" },
-  { role: "Admin", username: "admin", password: "Admin123!" },
-];
-
 export default function LoginPage() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
@@ -39,13 +33,8 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemo = (account) => {
-    const role = account.role.toLowerCase();
-    setForm({ role: role === "admin" ? "admin" : role, username: account.username, password: account.password });
-  };
-
   return (
-    <div className="mx-auto grid max-w-4xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className="mx-auto max-w-lg">
       <section className="card">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Sign in</h1>
         <p className="mt-1 text-sm text-slate-500">Use your account to bid, sell, or administer auctions.</p>
@@ -79,25 +68,10 @@ export default function LoginPage() {
             Create an account
           </Link>
         </p>
+        <p className="mt-2 text-xs text-slate-400">
+          Demo account credentials are documented in SETUP.md; they are not bundled into the client.
+        </p>
       </section>
-
-      <aside className="card h-fit bg-slate-900 text-slate-100">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-300">Demo accounts</h2>
-        <p className="mt-1 text-xs text-slate-400">Seed data ships with one account per role.</p>
-        <ul className="mt-4 space-y-3">
-          {DEMO_ACCOUNTS.map((account) => (
-            <li key={account.username} className="flex items-center justify-between gap-3 rounded-lg bg-white/5 px-3 py-2">
-              <div>
-                <p className="text-sm font-semibold">{account.role}</p>
-                <p className="text-xs text-slate-400">{account.username} / {account.password}</p>
-              </div>
-              <button type="button" className="rounded-md bg-white/10 px-2.5 py-1 text-xs font-semibold hover:bg-white/20" onClick={() => fillDemo(account)}>
-                Use
-              </button>
-            </li>
-          ))}
-        </ul>
-      </aside>
     </div>
   );
 }
