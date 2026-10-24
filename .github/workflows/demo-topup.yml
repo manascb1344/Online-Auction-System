@@ -1,8 +1,6 @@
 name: Top up demo listings
 
 on:
-  schedule:
-    - cron: "17 */6 * * *"
   workflow_dispatch:
     inputs:
       min_active:
