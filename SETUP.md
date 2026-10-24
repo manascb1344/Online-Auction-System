@@ -149,6 +149,9 @@ In Docker, `make up DB=postgres` performs the switch. The API reports the active
 - Terminate TLS at a reverse proxy in front of the web container.
 - The schema ships as initialization scripts, not migrations. For evolving deployments, introduce a migration tool and keep `server/src/queries/` as the single SQL source.
 - Pin image tags (MySQL 8.0, PostgreSQL 16, nginx, node) in a deployment pipeline.
+- Managed Postgres providers (Neon, Supabase, Render) work through either the discrete `DB_*` variables or a single `DATABASE_URL`; set `DB_SSL=true` when the provider requires TLS, then seed with `cd server && pnpm db:seed:hosted`.
+- This repository's Render service builds `server/Dockerfile` with build context `server` and probes `/health`; the Vercel project uses Root Directory `client` and `client/vercel.json` rewrites `/api` to the hosted API.
+- A hosted API needs `CLIENT_ORIGIN` set to the deployed web origin so browser requests pass CORS; the Docker client image proxies `/api` and does not need it.
 
 ## 10. Troubleshooting
 

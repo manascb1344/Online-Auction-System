@@ -112,7 +112,7 @@ Bid rules enforced by the API: the auction must be `active` and not past `end_ti
 | `bids` | Bid history | Item/bidder FKs, positive amount, status check |
 | `transactions` | Settled sales | One per item, buyer/seller FKs, amount check |
 
-`server/src/queries/items.js` derives the current bid and bid count with correlated subqueries, so `items` never carries stale denormalized bid data. All money is `DECIMAL(12,2)` / `NUMERIC(12,2)`.
+`server/src/queries/items.js` derives the current bid and bid count with correlated subqueries, so `items` never carries stale denormalized bid data. Auction status is derived from `start_time`/`end_time` in the shared SQL (the stored `auctions.status` column is a cache refreshed when a bid lands), so a scheduled auction becomes biddable as soon as its window opens without needing a background job. All money is `DECIMAL(12,2)` / `NUMERIC(12,2)`.
 
 Dialect-specific definitions live in `database/mysql/` and `database/postgres/`; they differ only in storage types (`CHAR(36)` vs `UUID`, `DATETIME` vs `TIMESTAMPTZ`) and table options. See [`database/README.md`](database/README.md).
 
@@ -182,6 +182,8 @@ The suite covers registration and duplicate handling, login failures, role enfor
 | `DB_CLIENT` | `mysql` | `mysql` or `postgres` |
 | `DB_HOST` / `DB_PORT` | `127.0.0.1` / engine default | In Compose the host is `db` |
 | `DB_USER` / `DB_PASSWORD` / `DB_NAME` | `auction_user` / `auction_password` / `auction_system` | Shared by both engines |
+| `DATABASE_URL` | unset | Optional single Postgres URL; overrides the `DB_*` fields and selects Postgres unless `DB_CLIENT` is set |
+| `DB_SSL` | `false` | `true` for managed Postgres that requires TLS (Neon, Supabase, Render) |
 | `JWT_SECRET` | dev fallback only | Required and enforced in production |
 | `JWT_EXPIRES_IN` | `1d` | Token lifetime |
 | `CLIENT_ORIGIN` | `http://localhost:3000` | CORS allowlist (comma separated) |

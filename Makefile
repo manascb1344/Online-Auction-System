@@ -31,7 +31,8 @@ help:
 
 .env:
 	@cp .env.example .env
-	@echo "Created .env - set a unique JWT_SECRET before exposing this stack."
+	@secret=$$(openssl rand -hex 32); sed -i "s|^JWT_SECRET=.*|JWT_SECRET=$$secret|" .env
+	@echo "Created .env with a generated JWT_SECRET."
 
 env: .env ## Create .env from the example if missing
 

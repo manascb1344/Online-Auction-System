@@ -38,13 +38,10 @@ module.exports = {
     LIMIT :limit OFFSET :offset
   `,
   listByBidder: `
-    SELECT b.id, b.item_id, i.name AS item_name, b.amount, b.status, b.created_at,
-           a.status AS auction_status, a.end_time
+    SELECT b.id, b.item_id, i.name AS item_name, b.amount, b.status, b.created_at
     FROM bids b
     JOIN items i ON i.id = b.item_id
-    JOIN auctions a ON a.item_id = i.id
     WHERE b.bidder_id = :bidderId
     ORDER BY b.created_at DESC
   `,
-  countAll: "SELECT COUNT(*) AS total FROM bids",
 };

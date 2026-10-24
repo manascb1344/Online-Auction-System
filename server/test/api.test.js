@@ -53,7 +53,7 @@ test("health endpoint reports the active dialect", async () => {
   const response = await request(app).get("/health");
   assert.equal(response.status, 200);
   assert.equal(response.body.status, "ok");
-  assert.ok(["mysql", "postgres"].includes(response.body.dialect));
+  assert.equal(response.body.dialect, process.env.DB_CLIENT ?? "mysql");
 
   const login = await request(app)
     .post("/api/auth/login")
@@ -69,6 +69,8 @@ test("buyers and sellers can register and duplicates are rejected", async () => 
   assert.equal(first.body.data.user.username, buyerOne.username);
   assert.ok(first.body.data.token);
   assert.equal(first.body.data.user.passwordHash, undefined);
+  assert.equal(first.body.data.user.accountBalance, 0);
+  assert.ok(!Number.isNaN(Date.parse(first.body.data.user.createdAt)));
   state.buyerToken = first.body.data.token;
 
   const second = await request(app).post("/api/auth/register").send(buyerTwo);
@@ -159,6 +161,48 @@ test("items can be read and filtered", async () => {
 
   const missing = await request(app).get(`/api/items/${crypto.randomUUID()}`);
   assert.equal(missing.status, 404);
+});
+
+test("a scheduled auction activates once its start time passes", async () => {
+  const start = new Date(Date.now() + 2000);
+  const end = new Date(Date.now() + 60 * 60 * 1000);
+
+  const created = await request(app)
+    .post("/api/items")
+    .set(auth(state.sellerToken))
+    .send({
+      name: `Scheduled lot ${suffix}`,
+      startingPrice: 15,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
+    });
+  assert.equal(created.status, 201);
+  assert.equal(created.body.data.auction.status, "scheduled");
+  const itemId = created.body.data.id;
+
+  const hidden = await request(app).get("/api/items").query({ status: "active", limit: 50 });
+  assert.ok(!hidden.body.data.some((item) => item.id === itemId));
+
+  const early = await request(app)
+    .post(`/api/items/${itemId}/bids`)
+    .set(auth(state.buyerToken))
+    .send({ amount: 15 });
+  assert.equal(early.status, 409);
+
+  // The auction lifecycle is time-based; wait past the start boundary before bidding.
+  await new Promise((resolve) => setTimeout(resolve, 2300));
+
+  const placed = await request(app)
+    .post(`/api/items/${itemId}/bids`)
+    .set(auth(state.buyerToken))
+    .send({ amount: 15 });
+  assert.equal(placed.status, 201);
+
+  const detail = await request(app).get(`/api/items/${itemId}`);
+  assert.equal(detail.body.data.auction.status, "active");
+
+  const visible = await request(app).get("/api/items").query({ status: "active", limit: 50 });
+  assert.ok(visible.body.data.some((item) => item.id === itemId));
 });
 
 test("bidding enforces role, minimum increment and auction state", async () => {

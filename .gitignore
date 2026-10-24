@@ -12,8 +12,9 @@
 **/.env
 !**/.env.example
 
-# omo local plans
+# omo local plans and review evidence
 /.omo/plans
+/.omo/evidence
 
 # production
 /build

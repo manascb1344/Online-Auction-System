@@ -12,6 +12,7 @@ function create(env) {
     password: env.DB_PASSWORD,
     database: env.DB_NAME,
     max: 10,
+    ...(env.DB_SSL ? { ssl: { rejectUnauthorized: false } } : {}),
   });
 
   const run = async (target, text, values) => {

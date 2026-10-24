@@ -29,13 +29,23 @@ async function place(req, res) {
     if (!item) throw ApiError.notFound("Item not found");
 
     const now = new Date();
-    if (new Date(auction.end_time) <= now) {
+    const status =
+      new Date(auction.end_time) <= now
+        ? "closed"
+        : new Date(auction.start_time) > now
+          ? "scheduled"
+          : "active";
+
+    // The stored status is a cache; the timestamps are authoritative. Persist the
+    // transition when a bid lands so later reads and admin filters agree.
+    if (status !== auction.status) {
+      await tx.query(auctions.setStatus, { id: auction.id, status });
+    }
+    if (status === "closed") {
       throw ApiError.conflict("This auction has already ended");
     }
-    if (auction.status !== "active") {
-      throw ApiError.conflict(
-        auction.status === "scheduled" ? "This auction has not started yet" : "This auction is not open for bidding",
-      );
+    if (status === "scheduled") {
+      throw ApiError.conflict("This auction has not started yet");
     }
 
     const highest = await tx.one(bids.highestForItem, { itemId });

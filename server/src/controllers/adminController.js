@@ -6,7 +6,6 @@ const stats = require("../queries/stats");
 const { toAuction, toBid, toTransaction, asNumber } = require("../utils/serializers");
 
 async function listAuctions(req, res) {
-  await db.query(auctions.closeExpired);
   const rows = await db.many(auctions.listAll);
   res.json({ data: rows.map(toAuction) });
 }

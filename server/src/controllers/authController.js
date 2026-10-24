@@ -38,8 +38,10 @@ async function register(req, res) {
   const passwordHash = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
   await db.query(lookup[role].insert, { id, username, passwordHash, email, address });
 
-  const user = { id, username, role, email, address, accountBalance: 0, createdAt: new Date() };
-  res.status(201).json({ data: { user: toUser(user, role), token: signToken(user) } });
+  const row = await db.one(lookup[role].byId, { id });
+  res.status(201).json({
+    data: { user: toUser(row, role), token: signToken({ id, role, username }) },
+  });
 }
 
 async function login(req, res) {

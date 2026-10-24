@@ -21,9 +21,6 @@ async function list(req, res) {
     offset: (page - 1) * limit,
   };
 
-  // Close auctions whose end time has passed before serving the catalogue.
-  await db.query(auctions.closeExpired);
-
   const rows = await db.many(items.list({ status, search }), params);
   res.json({
     data: rows.map(toItem),
@@ -32,7 +29,6 @@ async function list(req, res) {
 }
 
 async function getById(req, res) {
-  await db.query(auctions.closeExpired);
   const row = await db.one(items.findById, { id: req.params.id });
   if (!row) throw ApiError.notFound("Item not found");
   res.json({ data: toItem(row) });
@@ -76,13 +72,11 @@ async function create(req, res) {
 }
 
 async function listBySeller(req, res) {
-  await db.query(auctions.closeExpired);
   const rows = await db.many(items.listBySeller, { sellerId: req.params.sellerId });
   res.json({ data: rows.map(toItem) });
 }
 
 async function listMine(req, res) {
-  await db.query(auctions.closeExpired);
   const rows = await db.many(items.listBySeller, { sellerId: req.user.id });
   res.json({ data: rows.map(toItem) });
 }

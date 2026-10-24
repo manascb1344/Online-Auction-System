@@ -10,8 +10,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "node --test --test-concurrency=1 test/api.test.js",
-    "lint": "eslint src test"
+    "test": "node --test --test-concurrency=1 test/compile.test.js test/api.test.js",
+    "lint": "eslint src test",
+    "db:seed:hosted": "node scripts/seed-hosted.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

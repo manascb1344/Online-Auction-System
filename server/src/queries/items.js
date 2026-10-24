@@ -1,8 +1,10 @@
+const { auctionStatus } = require("./fragments");
+
 const baseSelect = `
   SELECT i.id, i.seller_id, i.name, i.description, i.starting_price, i.category,
          i.image_url, i.created_at,
          s.username AS seller_username,
-         a.id AS auction_id, a.start_time, a.end_time, a.status AS auction_status,
+         a.id AS auction_id, a.start_time, a.end_time, ${auctionStatus} AS auction_status,
          a.reserve_price,
          (SELECT MAX(b.amount) FROM bids b WHERE b.item_id = i.id) AS current_bid,
          (SELECT COUNT(*) FROM bids b WHERE b.item_id = i.id) AS bid_count
@@ -13,7 +15,7 @@ const baseSelect = `
 
 function list({ status, search } = {}) {
   const conditions = [];
-  if (status) conditions.push("a.status = :status");
+  if (status) conditions.push(`(${auctionStatus}) = :status`);
   if (search) conditions.push("LOWER(i.name) LIKE :search");
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   return `${baseSelect}
@@ -30,5 +32,4 @@ module.exports = {
     INSERT INTO items (id, seller_id, name, description, starting_price, category, image_url, created_at)
     VALUES (:id, :sellerId, :name, :description, :startingPrice, :category, :imageUrl, CURRENT_TIMESTAMP)
   `,
-  countAll: "SELECT COUNT(*) AS total FROM items",
 };

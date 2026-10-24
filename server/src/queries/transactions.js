@@ -11,9 +11,4 @@ const baseSelect = `
 module.exports = {
   listAll: `${baseSelect} ORDER BY t.created_at DESC`,
   listByBuyer: `${baseSelect} WHERE t.buyer_id = :buyerId ORDER BY t.created_at DESC`,
-  insert: `
-    INSERT INTO transactions (id, item_id, buyer_id, seller_id, amount, status, payment_method, created_at)
-    VALUES (:id, :itemId, :buyerId, :sellerId, :amount, :status, :paymentMethod, CURRENT_TIMESTAMP)
-  `,
-  countAll: "SELECT COUNT(*) AS total FROM transactions",
 };
