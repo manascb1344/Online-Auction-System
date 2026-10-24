@@ -1,25 +1,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { Client } = require("pg");
 
-const { env } = require("../src/config/env");
+const { createHostedClient } = require("./hosted-client");
 
 const schemaDir = path.resolve(__dirname, "../../database/postgres");
 
 async function main() {
-  if (env.DB_CLIENT !== "postgres") {
-    throw new Error("seed-hosted targets PostgreSQL; set DB_CLIENT=postgres or DATABASE_URL");
-  }
-
-  const client = new Client({
-    host: env.DB_HOST,
-    port: env.DB_PORT,
-    user: env.DB_USER,
-    password: env.DB_PASSWORD,
-    database: env.DB_NAME,
-    ...(env.DB_SSL ? { ssl: { rejectUnauthorized: false } } : {}),
-  });
-
+  const client = createHostedClient();
   await client.connect();
   try {
     const existing = await client.query("SELECT to_regclass('public.items') AS items");

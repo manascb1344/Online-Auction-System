@@ -16,4 +16,6 @@ module.exports = {
     ORDER BY a.end_time DESC
   `,
   setStatus: "UPDATE auctions SET status = :status WHERE id = :id",
+  countActive:
+    "SELECT COUNT(*) AS total FROM auctions WHERE start_time <= CURRENT_TIMESTAMP AND end_time > CURRENT_TIMESTAMP",
 };
