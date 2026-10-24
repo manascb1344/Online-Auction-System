@@ -24,14 +24,17 @@ Thank you for your interest in contributing to the Online Auction System! We wel
 - Implement your feature or fix the bug. Make sure to follow the existing code style and conventions used in the project.
 
 ### 5. Test Your Changes
-- Run the application locally and ensure that your changes work as expected. Write tests if applicable.
+- Start a database with `make db-up DB=mysql` (or `DB=postgres`), then run `make test-mysql` / `make test-postgres`.
+- Run `make test-all` before opening a pull request, and `cd server && pnpm lint` for the API.
+- If you changed the UI, start the stack with `make up DB=mysql` and exercise the flow in a browser.
 
 ### 6. Commit Your Changes
-- Commit your changes with a clear and concise commit message:
+- Stage only the files you changed, then commit with a clear message:
   ```bash
-  git add .
+  git add <paths>
   git commit -m "Add a short description of your changes"
   ```
+- Never stage `.env` files or database volumes; both are ignored by default.
 
 ### 7. Push to Your Fork
 - Push your changes back to your forked repository:
@@ -45,9 +48,12 @@ Thank you for your interest in contributing to the Online Auction System! We wel
 
 ## Guidelines for Contributions
 
-- **Code Quality**: Ensure your code is clean and follows the project's coding standards.
-- **Documentation**: Update the documentation if your changes introduce new features or alter existing functionality.
-- **Issues**: If you encounter bugs or have suggestions, please check the existing issues or create a new one.
+- **One SQL source**: application SQL belongs in `server/src/queries/`, written with `:named` parameters. Controllers must not contain SQL strings.
+- **Dual-engine parity**: keep `database/mysql/` and `database/postgres/` in sync, and use lowercase identifiers so the shared queries work on both.
+- **Layering**: routes wire paths and guards; controllers handle HTTP; `server/src/db/` is the only place that knows about a driver.
+- **Code quality**: run `pnpm lint` in `server/` and keep the client build warning-free.
+- **Documentation**: update `README.md`, `SETUP.md`, or `database/README.md` when behavior or setup changes. Never pin prose in tests.
+- **Issues**: check existing issues first; include reproduction steps, expected vs. actual behaviour, and the engine you used.
 
 ## Reporting Issues
 

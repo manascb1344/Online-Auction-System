@@ -1,163 +1,166 @@
-# Online Auction System - Setup Guide
+# Setup Guide
 
-This guide will help you set up the Online Auction System with MySQL running in Docker.
+This guide covers the Docker stack, local development, switching database engines, database lifecycle, and troubleshooting. For an overview of the project and its API, see [README.md](README.md).
 
-## Prerequisites
+## 1. Prerequisites
 
-Ensure that the following are installed on your machine:
+| Tool | Version | Needed for |
+|------|---------|------------|
+| Docker + Docker Compose | Compose v2 (`docker compose`) | Full stack and databases |
+| GNU Make | 4.x | All shortcuts in the Makefile |
+| Node.js | 20 or newer | Local API/client development |
+| pnpm | 9 or newer (`corepack enable`) | Installing dependencies locally |
 
-- **Node.js** (v14 or higher)
-- **npm** or **pnpm** (recommended)
-- **Git** (for version control)
-- **Docker** & **Docker Compose** (for MySQL container)
+You do not need Node or pnpm to run the Docker stack; the images install their own dependencies.
 
-## Project Structure
-
-- **client/**: React frontend
-- **server/**: Node.js backend (Express.js)
-- **database/**: SQL scripts for MySQL
-
-## Quick Start
-
-### 1. Start MySQL with Docker
-
-From the project root:
+## 2. Start the full stack
 
 ```bash
-docker-compose up -d
+git clone https://github.com/manascb1344/Online-Auction-System.git
+cd Online-Auction-System
+make env
+make up DB=mysql
 ```
 
-This will start:
-- MySQL 8.0 on port 3306
-- phpMyAdmin on port 8080 (optional, for database management)
+| URL | Service |
+|-----|---------|
+| http://localhost:3000 | React web client |
+| http://localhost:4000/health | API health check |
+| http://localhost:8080 | Adminer (start with `make adminer`) |
 
-The database will be automatically initialized with the schema and sample data from `database/dbms.sql`.
-
-### 2. Set Up the Backend
+For PostgreSQL instead of MySQL:
 
 ```bash
-cd server
-pnpm install
-pnpm start
+make down
+make up DB=postgres
 ```
 
-The backend will run on http://localhost:4000
+PostgreSQL publishes on host port **5433** so it can coexist with a local PostgreSQL on 5432. Override with `POSTGRES_HOST_PORT` in `.env`.
 
-### 3. Set Up the Frontend
+`make up` builds both images, waits for the database health check, then waits for the API. The web container serves the built SPA and proxies `/api` to the API container, so the browser only talks to port 3000.
 
-In a new terminal:
+## 3. Demo accounts
+
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `Admin123!` |
+| Seller | `seller1`, `seller2`, `seller3` | `Seller123!` |
+| Buyer | `buyer1`, `buyer2`, `buyer3`, `buyer4` | `Buyer123!` |
+
+The seed also ships six lots in three auction states (active, scheduled, closed), five bids, and two settled transactions.
+
+## 4. Local development (API and client on the host)
 
 ```bash
-cd client
-pnpm install
-pnpm start
+make install
+make db-up DB=mysql
+cp server/.env.example server/.env
 ```
 
-The frontend will run on http://localhost:3000
+Edit `server/.env` for the engine you started:
 
-## Database Configuration
-
-### Environment Variables (Server)
-
-The server uses these defaults (already set in `server/.env`):
-
-```
-DB_HOST=localhost
+```dotenv
+DB_CLIENT=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
 DB_USER=auction_user
 DB_PASSWORD=auction_password
 DB_NAME=auction_system
-DB_PORT=3306
+JWT_SECRET=local-dev-secret-please-change
 ```
 
-For Docker setup, these match the docker-compose configuration.
-
-### MySQL Connection Details
-
-- **Host**: localhost (or `mysql` if connecting from another Docker container)
-- **Port**: 3306
-- **Database**: auction_system
-- **Username**: auction_user
-- **Password**: auction_password
-- **Root Password**: root_password
-
-### phpMyAdmin Access
-
-If you started the docker-compose with phpMyAdmin:
-
-- URL: http://localhost:8080
-- Server: mysql
-- Username: root or auction_user
-- Password: root_password or auction_password
-
-## Manual Database Setup (if needed)
-
-If you need to re-initialize the database:
+Then run the two dev servers in separate terminals:
 
 ```bash
-# Stop and remove the container
-docker-compose down -v
-
-# Start fresh
-docker-compose up -d
-
-# Or manually run SQL
-docker cp database/dbms.sql auction_mysql:/tmp/
-docker exec -i auction_mysql mysql -u root -proot_password auction_system < database/dbms.sql
+make dev-api       # node --watch src/server.js on :4000
+make dev-client    # react-scripts start on :3000
 ```
 
-## Troubleshooting
+The client reads `REACT_APP_API_URL` at build/start time. The default is `http://localhost:4000/api`; copy `client/.env.example` to `client/.env` if you need another host.
 
-### Port already in use
+## 5. Environment files
 
-If port 3306 is already in use:
+There are two independent files:
+
+| File | Read by | Purpose |
+|------|---------|---------|
+| `.env` (repo root) | Docker Compose | Ports, database credentials, `JWT_SECRET` for containers |
+| `server/.env` | API process on the host | Database connection, JWT, CORS, bcrypt cost |
+| `client/.env` | React dev server / build | `REACT_APP_API_URL` |
+
+None of them are committed. `make env` copies the root example; the repository's `.gitignore` also blocks every `**/.env`.
+
+`JWT_SECRET` must be unique outside local development. Production mode refuses to boot with the development fallback.
+
+## 6. Database lifecycle
+
+The schema and seed are applied by the official database images **only when the data volume is empty**.
 
 ```bash
-# Find what's using port 3306
-sudo lsof -i :3306
-
-# Or change the port in docker-compose.yml
-ports:
-  - "3307:3306"  # Use 3307 on host instead
+make db-reset DB=mysql      # remove volumes, recreate, reload schema + seed
+make db-reset DB=postgres
+make db-shell DB=mysql      # mysql> prompt inside the container
+make db-shell DB=postgres   # psql prompt inside the container
 ```
 
-Then update `server/.env`:
-```
-DB_PORT=3307
-```
-
-### Database connection refused
-
-1. Make sure Docker container is running:
-   ```bash
-   docker ps
-   ```
-
-2. Check container logs:
-   ```bash
-   docker logs auction_mysql
-   ```
-
-3. Wait for MySQL to fully start (first run may take 30-60 seconds)
-
-### Reset everything
+Manual equivalents:
 
 ```bash
-docker-compose down -v  # Remove container and data
-docker-compose up -d    # Start fresh
+docker compose -f docker-compose.yml -f docker/compose.mysql.yml down -v
+docker compose -f docker-compose.yml -f docker/compose.mysql.yml up -d --wait db
 ```
 
-## Available Scripts
+To inspect data from the host with a local client:
 
-### Backend
-- `pnpm start` - Start production server
-- `pnpm dev` - Start with nodemon (auto-reload)
+```bash
+mysql -h 127.0.0.1 -P 3306 -u auction_user -p auction_system
+psql -h 127.0.0.1 -p 5433 -U auction_user -d auction_system
+```
 
-### Frontend
-- `pnpm start` - Start development server
-- `pnpm build` - Build for production
+## 7. Tests
 
-## Notes
+```bash
+make test-mysql
+make test-postgres
+make test-all
+```
 
-- The MySQL data is persisted in a Docker volume (`mysql_data`)
-- The SQL schema is automatically executed on first container startup
-- Sample data (50 buyers, 50 sellers, 50 items, etc.) is included
+Each target recreates the database volume (schema + seed), then runs the integration suite against the live API. The suite uses the seeded seller and admin accounts and creates uniquely named buyers, so it is safe to rerun.
+
+The suite asserts: health/dialect reporting, registration and duplicate handling, login failures, role enforcement, lot creation, filtering and search, the bid minimum, the outbid transition, rejection of closed auctions, admin-only aggregates, and the structured 404 envelope.
+
+## 8. Switching engines
+
+The application never branches on the engine outside `server/src/db/dialects/` and the two schema folders. To switch:
+
+```bash
+make down
+make db-up DB=postgres
+# update server/.env if you run the API on the host
+make dev-api
+```
+
+In Docker, `make up DB=postgres` performs the switch. The API reports the active engine at `GET /health` (`{"status":"ok","dialect":"postgres"}`).
+
+## 9. Production notes
+
+- Set a long, random `JWT_SECRET`; never reuse the example value.
+- Replace the demo database credentials (`auction_user` / `auction_password`).
+- Terminate TLS at a reverse proxy in front of the web container.
+- The schema ships as initialization scripts, not migrations. For evolving deployments, introduce a migration tool and keep `server/src/queries/` as the single SQL source.
+- Pin image tags (MySQL 8.0, PostgreSQL 16, nginx, node) in a deployment pipeline.
+- Managed Postgres providers (Neon, Supabase, Render) work through either the discrete `DB_*` variables or a single `DATABASE_URL`; set `DB_SSL=true` when the provider requires TLS, then seed with `cd server && pnpm db:seed:hosted`.
+- This repository's Render service builds `server/Dockerfile` with build context `server` and probes `/health`; the Vercel project uses Root Directory `client` and `client/vercel.json` rewrites `/api` to the hosted API.
+- A hosted API needs `CLIENT_ORIGIN` set to the deployed web origin so browser requests pass CORS; the Docker client image proxies `/api` and does not need it.
+
+## 10. Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `required variable JWT_SECRET is missing` | No `.env` at the repo root | `make env`, then set a real secret |
+| Port 3306 / 5433 / 3000 / 4000 already in use | Another service owns the port | Change the port in `.env` (`MYSQL_HOST_PORT`, `POSTGRES_HOST_PORT`, `CLIENT_PORT`, `API_PORT`) |
+| Schema changes do not appear | Init scripts only run on an empty volume | `make db-reset DB=<engine>` |
+| `Cannot reach the API` in the browser | API container unhealthy or wrong `REACT_APP_API_URL` | `make ps` / `make logs`; rebuild the client if the URL changed |
+| Login works, then requests return 401 | API restarted with a different `JWT_SECRET` | Sign in again; keep the secret stable |
+| Tailwind classes have no effect | Missing PostCSS wiring | Ensure `client/postcss.config.js` exists and rebuild |
+| `make up DB=...` says the DB must be mysql or postgres | Typo in `DB` | Use `DB=mysql` or `DB=postgres` |

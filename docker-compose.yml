@@ -1,46 +1,54 @@
-version: '3.8'
+name: online-auction-system
+
+# Base stack: API + web client + optional Adminer.
+# Always pair this file with a database override:
+#   docker compose -f docker-compose.yml -f docker/compose.mysql.yml up -d
+# The Makefile does that for you (`make up DB=mysql`).
 
 services:
-  mysql:
-    container_name: auction_mysql
-    image: mysql:8.0
-    command: --lower-case-table-names=1
+  api:
+    build:
+      context: ./server
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: auction_system
-      MYSQL_USER: auction_user
-      MYSQL_PASSWORD: auction_password
+      NODE_ENV: production
+      PORT: 4000
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:3000}
+      DB_CLIENT: ${DB_CLIENT:-mysql}
+      DB_HOST: db
+      DB_USER: ${DB_USER:-auction_user}
+      DB_PASSWORD: ${DB_PASSWORD:-auction_password}
+      DB_NAME: ${DB_NAME:-auction_system}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-10}
     ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./database/init:/docker-entrypoint-initdb.d:ro
+      - "${API_PORT:-4000}:4000"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - auction_network
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
 
-  phpmyadmin:
-    container_name: auction_phpmyadmin
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root_password
+  client:
+    build:
+      context: ./client
+      args:
+        REACT_APP_API_URL: /api
     ports:
-      - "8080:80"
+      - "${CLIENT_PORT:-3000}:80"
     depends_on:
-      mysql:
+      api:
         condition: service_healthy
-    networks:
-      - auction_network
 
-volumes:
-  mysql_data:
-
-networks:
-  auction_network:
-    driver: bridge
+  adminer:
+    image: adminer:4
+    profiles: ["tools"]
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"

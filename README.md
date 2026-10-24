@@ -1,59 +1,203 @@
 # Online Auction System
 
-This project focuses on the design and implementation of a comprehensive database schema for managing users, items, bids, auctions, and transactions in an online auction environment. 🎉
+A reference-quality, SQL-first auction platform for coursework and self-study. Buyers bid on timed lots, sellers publish auctions, and administrators inspect every auction, bid, and settlement. The same application runs on **MySQL 8.0** or **PostgreSQL 16** with **one source of SQL** for both engines.
 
-## Project Overview
+## Highlights
 
-The Online Auction System is designed to facilitate seamless interactions between buyers, sellers, and admins through a well-structured database schema. Key features include:
+- **Dual database, one query source.** Every application query lives in `server/src/queries/` and is written with named parameters (`:name`). A small compiler emits `?` for mysql2 or `$1` for node-postgres, so no query is duplicated per engine.
+- **Transactional bidding.** Bid placement locks the auction row (`SELECT ... FOR UPDATE`), validates status, end time, reserve price, and minimum increment, then writes the bid and marks the previous winner `outbid` in one transaction.
+- **Real authentication.** bcrypt password hashes, JWT bearer tokens, role guards (`buyer`, `seller`, `admin`), and per-route request validation with Zod.
+- **Enforced schema.** Table-level foreign keys, `CHECK` constraints, unique keys, and secondary indexes on both engines. Primary keys are application-generated UUIDs, which removes `MAX(id) + 1` races and keeps inserts portable.
+- **Dockerized stack.** API, web client, and database run through Compose profiles/overrides; the web container serves the SPA and proxies `/api` to the API container.
+- **Tested both ways.** The same integration suite runs against live MySQL and PostgreSQL containers, covering happy paths, role violations, invalid bids, and closed auctions.
 
-- **User Management**: Centralized user profile management with details such as unique User_ID, Username, Password, Email, Address, preferred payment methods, and transaction history.
-- **Item Management**: Detailed tracking of auction items with attributes like Item_ID, Seller_ID, Item_Name, Description, Starting_Price, Auction_End_Time, item condition, category, and images.
-- **Bid Tracking**: Real-time bid tracking with unique Bid_ID, Bidder_ID, Item_ID, Bid_Amount, Bid_Time, bid status, and bid increment.
-- **Auction Management**: Comprehensive auction tracking with Auction_ID, Item_ID, Auction_Start_Time, Auction_End_Time, auction status, and reserve price.
-- **Transaction Recording**: Management of completed transactions with Transaction_ID, Buyer_ID, Seller_ID, Item_ID, Transaction_Amount, Transaction_Time, payment method, and transaction status.
+## Architecture
 
-## Tech Stack
+```text
+Browser
+  │  React 18 + React Router + Tailwind
+  │  Authorization: Bearer <JWT>
+  ▼
+Express API (Node 20+)
+  │  routers → controllers → db facade → named-parameter compiler
+  │  Zod validation · helmet · CORS · structured errors
+  ▼
+MySQL 8.0  or  PostgreSQL 16
+```
 
-This project leverages a variety of technologies to deliver a robust online auction system:
+The API and client are stateless; the database is the only stateful component. Both database engines use the same table and column names (lowercase, unquoted), so the shared SQL runs unchanged.
 
-- **Frontend**:
-  - **React.js**: For building the user interface and enhancing user experience.
-  - **Tailwind-CSS**: For styling and responsive design.
+## Tech stack
 
-- **Backend**:
-  - **Node.js**: Server-side JavaScript runtime environment for building scalable network applications.
-  - **Express.js**: Web application framework for Node.js to handle HTTP requests and routing.
+| Layer | Choice |
+|-------|--------|
+| Web client | React 18, React Router 6, Tailwind CSS 3, `react-icons` |
+| API | Node.js 20+, Express 4, Zod, helmet, CORS |
+| Auth | bcryptjs hashes, JSON Web Tokens |
+| Data access | Raw SQL (`mysql2` / `pg`) behind one adapter interface |
+| Databases | MySQL 8.0, PostgreSQL 16 |
+| Packaging | Docker, Docker Compose, Make |
+| Tests | Node's built-in `node:test` + Supertest |
 
-- **Database**:
-  - **MySQL**: Relational SQL database management system (running in Docker) for storing and managing data related to users, items, bids, auctions, and transactions.
+## Quick start (Docker)
 
-- **Data Visualization**:
-  - **Power BI**: For visualizing and analyzing data in real-time with interactive reports and dashboards.
+```bash
+git clone https://github.com/manascb1344/Online-Auction-System.git
+cd Online-Auction-System
+make env                     # creates .env from .env.example
+make up DB=mysql             # http://localhost:3000
+```
 
-- **Development Tools**:
-  - **Git**: Version control system for tracking changes in source code.
+For PostgreSQL:
 
-## Features
+```bash
+make up DB=postgres          # http://localhost:3000, database on host port 5433
+```
 
-- **User Profiles**: Manage and view user profiles with complete transaction history.
-- **Item Listings**: View and list items for auction with detailed information.
-- **Real-Time Bidding**: Track and place bids in real-time.
-- **Auction Management**: Start and manage auctions with reserve prices and status updates.
-- **Transaction Processing**: Record and manage transactions post-auction.
+Stop the stack with `make down`; wipe data and reload the seed with `make db-reset DB=mysql` (or `DB=postgres`).
 
-## Documentation & Setup
+Demo accounts (seeded in both engines):
 
-- For the setup instructions, please refer to the [Setup Guide](./SETUP.md).
-- For contributing guidelines, please see the [Contributing Guide](./CONTRIBUTING.md).
+| Role | Username | Password |
+|------|----------|----------|
+| Admin | `admin` | `Admin123!` |
+| Seller | `seller1` / `seller2` / `seller3` | `Seller123!` |
+| Buyer | `buyer1` … `buyer4` | `Buyer123!` |
 
-## Demo & Documentation
+## Local development (without app containers)
 
-Check out the following resources to better understand the project:
+```bash
+make install                 # server + client dependencies
+make db-up DB=mysql          # database only, published on localhost:3306
+make dev-api                 # API on :4000 (node --watch)
+make dev-client              # React dev server on :3000
+```
 
-- **[Demo Video](https://github.com/user-attachments/assets/b93b3b77-e1bc-4d35-8c14-638d192a6f94)**: A video demonstration of the Online Auction System in action.
+Use `DB=postgres` to develop against PostgreSQL (host port `5433`). The API reads `server/.env`; copy `server/.env.example` and set `DB_CLIENT`, `DB_PORT`, and `JWT_SECRET`.
 
-https://github.com/user-attachments/assets/b93b3b77-e1bc-4d35-8c14-638d192a6f94
+## API reference
 
-- **[PowerPoint Presentation](https://github.com/user-attachments/files/16395925/MiniProject_PPT_Online.Auction.System_Final_.pdf)**: A presentation outlining the project details and architecture.
+All responses use `{ "data": ... }` on success and `{ "error": { "code", "message", "details?" } }` on failure.
 
-- **[Project Report](https://github.com/user-attachments/files/16395875/PROJECT.REPORT_FINAL.pdf)**: Comprehensive report detailing the project implementation and findings.
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| `GET` | `/health` | public | Liveness + active dialect |
+| `POST` | `/api/auth/register` | public | Create a buyer or seller |
+| `POST` | `/api/auth/login` | public | Obtain a JWT for a role |
+| `GET` | `/api/auth/me` | any | Current account profile |
+| `GET` | `/api/items` | public | Active lots; `status`, `search`, `page`, `limit` |
+| `GET` | `/api/items/:id` | public | Lot detail with auction state |
+| `POST` | `/api/items` | seller | Create a lot and its auction |
+| `GET` | `/api/items/mine` | seller | Lots owned by the caller |
+| `GET` | `/api/items/:id/bids` | public | Bid history (highest first) |
+| `POST` | `/api/items/:id/bids` | buyer | Place a bid |
+| `GET` | `/api/sellers/:sellerId/items` | public | Public seller inventory |
+| `GET` | `/api/me/bids` | buyer | Caller's bids |
+| `GET` | `/api/me/transactions` | buyer | Caller's settled purchases |
+| `GET` | `/api/admin/stats` | admin | Aggregate counts |
+| `GET` | `/api/admin/auctions` | admin | Every auction |
+| `GET` | `/api/admin/bids` | admin | Every bid (paginated) |
+| `GET` | `/api/admin/transactions` | admin | Every settlement |
+
+Bid rules enforced by the API: the auction must be `active` and not past `end_time`; the first bid must meet `max(starting_price, reserve_price)`; later bids must beat the current highest bid by at least `1.00`.
+
+## Database design
+
+| Table | Purpose | Key constraints |
+|-------|---------|-----------------|
+| `buyers`, `sellers` | Account rows per role | Unique username/email, non-negative balance |
+| `admins` | Back-office accounts | Unique username |
+| `items` | Lots for sale | Seller FK, non-negative starting price |
+| `auctions` | One auction per lot | Unique item FK, valid window, status check |
+| `bids` | Bid history | Item/bidder FKs, positive amount, status check |
+| `transactions` | Settled sales | One per item, buyer/seller FKs, amount check |
+
+`server/src/queries/items.js` derives the current bid and bid count with correlated subqueries, so `items` never carries stale denormalized bid data. Auction status is derived from `start_time`/`end_time` in the shared SQL (the stored `auctions.status` column is a cache refreshed when a bid lands), so a scheduled auction becomes biddable as soon as its window opens without needing a background job. All money is `DECIMAL(12,2)` / `NUMERIC(12,2)`.
+
+Dialect-specific definitions live in `database/mysql/` and `database/postgres/`; they differ only in storage types (`CHAR(36)` vs `UUID`, `DATETIME` vs `TIMESTAMPTZ`) and table options. See [`database/README.md`](database/README.md).
+
+## Testing
+
+```bash
+make test-mysql       # reset MySQL volume, load seed, run the API suite
+make test-postgres    # same suite against PostgreSQL
+make test-all         # both engines
+```
+
+The suite covers registration and duplicate handling, login failures, role enforcement, lot creation, filtering/search, bid increments, the outbid transition, closed-auction rejection, admin-only views, and the 404 envelope.
+
+## Makefile
+
+| Command | Effect |
+|---------|--------|
+| `make help` | List targets (shows the selected `DB`) |
+| `make env` | Create `.env` from `.env.example` if missing |
+| `make install` | Install server and client dependencies |
+| `make up DB=mysql` | Build and start the full stack |
+| `make down` | Stop containers, keep volumes |
+| `make db-up DB=postgres` | Start only the database |
+| `make db-reset DB=mysql` | Drop and recreate the volume, reload schema + seed |
+| `make db-shell DB=postgres` | Open `psql`/`mysql` inside the database container |
+| `make test-mysql` / `make test-postgres` | Integration suite for one engine |
+| `make logs` / `make ps` | Container logs / status |
+| `make clean` | Remove containers and volumes |
+
+## Project structure
+
+```text
+.
+├── client/                 # React SPA (CRA 5)
+│   ├── src/
+│   │   ├── api/            # fetch client + useApi hook
+│   │   ├── auth/           # session storage + auth context
+│   │   ├── components/     # layout and shared UI
+│   │   └── pages/          # routed screens
+│   ├── Dockerfile          # multi-stage build → nginx
+│   └── nginx.conf          # SPA fallback + /api proxy
+├── server/
+│   ├── src/
+│   │   ├── config/         # validated environment
+│   │   ├── db/             # compiler, adapters, facade
+│   │   ├── queries/        # THE single source of SQL
+│   │   ├── controllers/    # HTTP handlers only
+│   │   ├── routes/         # endpoint wiring + guards
+│   │   ├── middleware/     # auth, validation, errors
+│   │   └── validation/     # Zod schemas
+│   ├── test/               # integration suite
+│   └── Dockerfile
+├── database/
+│   ├── mysql/              # schema + seed
+│   └── postgres/           # schema + seed
+├── docker/                 # per-engine Compose overrides
+├── docker-compose.yml      # API + client + Adminer (base)
+├── Makefile
+├── SETUP.md
+└── .env.example
+```
+
+## Environment variables
+
+| Variable | Default | Notes |
+|----------|---------|-------|
+| `DB_CLIENT` | `mysql` | `mysql` or `postgres` |
+| `DB_HOST` / `DB_PORT` | `127.0.0.1` / engine default | In Compose the host is `db` |
+| `DB_USER` / `DB_PASSWORD` / `DB_NAME` | `auction_user` / `auction_password` / `auction_system` | Shared by both engines |
+| `DATABASE_URL` | unset | Optional single Postgres URL; overrides the `DB_*` fields and selects Postgres unless `DB_CLIENT` is set |
+| `DB_SSL` | `false` | `true` for managed Postgres that requires TLS (Neon, Supabase, Render) |
+| `JWT_SECRET` | dev fallback only | Required and enforced in production |
+| `JWT_EXPIRES_IN` | `1d` | Token lifetime |
+| `CLIENT_ORIGIN` | `http://localhost:3000` | CORS allowlist (comma separated) |
+| `BCRYPT_ROUNDS` | `10` | Password hashing cost |
+| `REACT_APP_API_URL` | `http://localhost:4000/api` | Client build-time API base (`/api` in Docker) |
+
+## Troubleshooting
+
+- **Port 5432 is busy.** The Postgres container publishes on `5433` by default; change `POSTGRES_HOST_PORT` in `.env` if needed.
+- **Schema changes do not appear.** Init scripts run only on an empty volume; use `make db-reset DB=<engine>`.
+- **Login fails after changing `.env`.** JWTs are signed with `JWT_SECRET`; restart the API and sign in again.
+- **`make up` refuses to start.** `JWT_SECRET` is required by Compose; run `make env` and replace the placeholder.
+- **Tailwind classes have no effect.** Ensure `client/postcss.config.js` exists; it is what wires Tailwind into CRA's PostCSS pipeline.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Run `make test-all` before opening a pull request; never commit `.env` files or database volumes.

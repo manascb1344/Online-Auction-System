@@ -1,0 +1,44 @@
+-- Demo data for the Online Auction System (PostgreSQL).
+-- All timestamps are relative to container start so the demo stays useful.
+-- Credentials: admin/Admin123!, seller1..3/Seller123!, buyer1..4/Buyer123!
+
+INSERT INTO admins (id, username, password_hash) VALUES
+  ('00000000-0000-4000-8000-00000000a001', 'admin', '$2b$10$UaGGrqbLogJAEI0Ve.gM.OU4DLqOZniib4AWSjvn63fFA1g/XjvIC');
+
+INSERT INTO sellers (id, username, password_hash, email, address, account_balance) VALUES
+  ('00000000-0000-4000-8000-000000000001', 'seller1', '$2b$10$.H3WOVgBF/pY/lYJw9wsL.MIVS4JYv70Q1.aoPcdX9NxcxOCHq582', 'seller1@example.com', '12 Market Street, Pune', 500.00),
+  ('00000000-0000-4000-8000-000000000002', 'seller2', '$2b$10$.H3WOVgBF/pY/lYJw9wsL.MIVS4JYv70Q1.aoPcdX9NxcxOCHq582', 'seller2@example.com', '48 Lakeside Road, Bengaluru', 500.00),
+  ('00000000-0000-4000-8000-000000000003', 'seller3', '$2b$10$.H3WOVgBF/pY/lYJw9wsL.MIVS4JYv70Q1.aoPcdX9NxcxOCHq582', 'seller3@example.com', '7 Hill View, Kochi', 500.00);
+
+INSERT INTO buyers (id, username, password_hash, email, address, account_balance) VALUES
+  ('00000000-0000-4000-8000-000000000101', 'buyer1', '$2b$10$h/OX8HguFF7bxeZ.c1j2xeiItjNOHpNrzs4o941hVluwe9RLNe7im', 'buyer1@example.com', '3 Rose Lane, Mumbai', 1000.00),
+  ('00000000-0000-4000-8000-000000000102', 'buyer2', '$2b$10$h/OX8HguFF7bxeZ.c1j2xeiItjNOHpNrzs4o941hVluwe9RLNe7im', 'buyer2@example.com', '19 Park Avenue, Delhi', 1000.00),
+  ('00000000-0000-4000-8000-000000000103', 'buyer3', '$2b$10$h/OX8HguFF7bxeZ.c1j2xeiItjNOHpNrzs4o941hVluwe9RLNe7im', 'buyer3@example.com', '5 Lake Road, Chennai', 1000.00),
+  ('00000000-0000-4000-8000-000000000104', 'buyer4', '$2b$10$h/OX8HguFF7bxeZ.c1j2xeiItjNOHpNrzs4o941hVluwe9RLNe7im', 'buyer4@example.com', '22 Green Street, Jaipur', 1000.00);
+
+INSERT INTO items (id, seller_id, name, description, starting_price, category) VALUES
+  ('00000000-0000-4000-8000-000000000201', '00000000-0000-4000-8000-000000000001', 'Vintage wristwatch', 'Serviced 1970s mechanical watch with original strap.', 100.00, 'Watches'),
+  ('00000000-0000-4000-8000-000000000202', '00000000-0000-4000-8000-000000000002', 'Mechanical keyboard', 'Hot-swappable 75 percent board with tactile switches.', 50.00, 'Electronics'),
+  ('00000000-0000-4000-8000-000000000203', '00000000-0000-4000-8000-000000000001', 'Film camera', '35mm rangefinder, recently cleaned and tested.', 80.00, 'Photography'),
+  ('00000000-0000-4000-8000-000000000204', '00000000-0000-4000-8000-000000000003', 'Rare book set', 'Three-volume illustrated edition, 1962.', 30.00, 'Books'),
+  ('00000000-0000-4000-8000-000000000205', '00000000-0000-4000-8000-000000000002', 'Bronze sculpture', 'Abstract study, signed and numbered.', 200.00, 'Art'),
+  ('00000000-0000-4000-8000-000000000206', '00000000-0000-4000-8000-000000000003', 'Graphics tablet', 'Medium drawing tablet with pen and spare nibs.', 40.00, 'Electronics');
+
+INSERT INTO auctions (id, item_id, start_time, end_time, status, reserve_price) VALUES
+  ('00000000-0000-4000-8000-000000000301', '00000000-0000-4000-8000-000000000201', NOW() - INTERVAL '1 days', NOW() + INTERVAL '3 days', 'active', 120.00),
+  ('00000000-0000-4000-8000-000000000302', '00000000-0000-4000-8000-000000000202', NOW() - INTERVAL '2 days', NOW() + INTERVAL '1 days', 'active', 50.00),
+  ('00000000-0000-4000-8000-000000000303', '00000000-0000-4000-8000-000000000203', NOW(), NOW() + INTERVAL '5 days', 'active', 100.00),
+  ('00000000-0000-4000-8000-000000000304', '00000000-0000-4000-8000-000000000204', NOW() - INTERVAL '5 days', NOW() - INTERVAL '2 days', 'closed', 30.00),
+  ('00000000-0000-4000-8000-000000000305', '00000000-0000-4000-8000-000000000205', NOW() + INTERVAL '2 days', NOW() + INTERVAL '9 days', 'scheduled', 250.00),
+  ('00000000-0000-4000-8000-000000000306', '00000000-0000-4000-8000-000000000206', NOW() - INTERVAL '8 days', NOW() - INTERVAL '3 days', 'closed', 40.00);
+
+INSERT INTO bids (id, item_id, bidder_id, amount, status, created_at) VALUES
+  ('00000000-0000-4000-8000-000000000401', '00000000-0000-4000-8000-000000000201', '00000000-0000-4000-8000-000000000101', 130.00, 'outbid', NOW() - INTERVAL '6 hours'),
+  ('00000000-0000-4000-8000-000000000402', '00000000-0000-4000-8000-000000000201', '00000000-0000-4000-8000-000000000102', 145.00, 'winning', NOW() - INTERVAL '2 hours'),
+  ('00000000-0000-4000-8000-000000000403', '00000000-0000-4000-8000-000000000202', '00000000-0000-4000-8000-000000000103', 60.00, 'winning', NOW() - INTERVAL '3 hours'),
+  ('00000000-0000-4000-8000-000000000404', '00000000-0000-4000-8000-000000000204', '00000000-0000-4000-8000-000000000104', 45.00, 'won', NOW() - INTERVAL '2 days'),
+  ('00000000-0000-4000-8000-000000000405', '00000000-0000-4000-8000-000000000206', '00000000-0000-4000-8000-000000000102', 55.00, 'won', NOW() - INTERVAL '3 days');
+
+INSERT INTO transactions (id, item_id, buyer_id, seller_id, amount, status, payment_method, created_at) VALUES
+  ('00000000-0000-4000-8000-000000000501', '00000000-0000-4000-8000-000000000204', '00000000-0000-4000-8000-000000000104', '00000000-0000-4000-8000-000000000003', 45.00, 'completed', 'card', NOW() - INTERVAL '2 days'),
+  ('00000000-0000-4000-8000-000000000502', '00000000-0000-4000-8000-000000000206', '00000000-0000-4000-8000-000000000102', '00000000-0000-4000-8000-000000000002', 55.00, 'completed', 'upi', NOW() - INTERVAL '3 days');

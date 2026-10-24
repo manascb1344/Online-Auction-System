@@ -1,0 +1,14 @@
+version: 2
+
+# The repository ships a public demo dataset. These paths contain documented
+# demo credentials or bcrypt hashes for that dataset, not production secrets.
+# Real secrets live in untracked .env files and deployment dashboards.
+secret:
+  ignored-paths:
+    - "README.md"
+    - "SETUP.md"
+    - "database/mysql/02_seed.sql"
+    - "database/postgres/02_seed.sql"
+    - "client/src/pages/LoginPage.jsx"
+    - "render/docker-compose.yml"
+    - "server/index.js"
