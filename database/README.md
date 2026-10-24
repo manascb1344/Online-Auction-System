@@ -103,7 +103,7 @@ Timestamps are relative to container start (`now ± n days`), so the demo stays 
 
 ## Keeping the hosted demo populated
 
-The scheduled workflow `.github/workflows/demo-topup.yml` only adds data. It counts active auctions and, when there are fewer than four, creates new lots as the seeded sellers with fresh timestamps and two bids each from the seeded buyers. Existing accounts, lots, bids, and transactions are never deleted.
+The scheduled workflow `.github/workflows/demo-topup.yml` only adds data. It counts active auctions and, when there are fewer than four, creates new lots as the seeded sellers with fresh timestamps and two bids each from the seeded buyers. Lot names, descriptions, categories, and prices are generated with Faker on every run, so there is no fixed catalogue to maintain. Existing accounts, lots, bids, and transactions are never deleted.
 
 Run it manually against the hosted database with:
 
