@@ -1,0 +1,4 @@
+allowBuilds:
+  canvas: false
+  core-js: true
+  core-js-pure: true

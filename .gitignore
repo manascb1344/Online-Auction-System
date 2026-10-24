@@ -7,8 +7,17 @@
 # testing
 /coverage
 
+# environment
+.env
+**/.env
+!**/.env.example
+
+# omo local plans
+/.omo/plans
+
 # production
 /build
+client/build
 
 # misc
 .DS_Store
