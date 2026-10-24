@@ -101,6 +101,19 @@ Timestamps are relative to container start (`now ± n days`), so the demo stays 
 4. Run `make db-reset DB=mysql` and `make db-reset DB=postgres`, then `make test-all`.
 5. If the change affects an API payload, update `server/src/queries/`, the controller, and the client together.
 
+## Keeping the hosted demo populated
+
+The scheduled workflow `.github/workflows/demo-topup.yml` only adds data. It counts active auctions and, when there are fewer than four, creates new lots as the seeded sellers with fresh timestamps and two bids each from the seeded buyers. Existing accounts, lots, bids, and transactions are never deleted.
+
+Run it manually against the hosted database with:
+
+```bash
+cd server
+ALLOW_DEMO_TOPUP=true DEMO_DATABASE_URL="postgresql://..." DB_SSL=true pnpm db:demo-topup
+```
+
+Safety guards: `ALLOW_DEMO_TOPUP=true` must be set, `DEMO_DATABASE_URL` is required, and the script refuses localhost/private hosts so it cannot touch a development database.
+
 ## Inspecting data
 
 ```bash

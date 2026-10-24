@@ -1,0 +1,62 @@
+name: Top up demo listings
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: demo-topup
+  cancel-in-progress: false
+
+jobs:
+  top-up:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: server/pnpm-lock.yaml
+
+      - name: Install server dependencies
+        working-directory: server
+        run: pnpm install --frozen-lockfile --prod
+
+      - name: Add demo listings when active auctions run low
+        working-directory: server
+        env:
+          NODE_ENV: test
+          DB_CLIENT: postgres
+          DB_SSL: "true"
+          DEMO_DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+          ALLOW_DEMO_TOPUP: "true"
+          DEMO_MIN_ACTIVE: "4"
+          DEMO_MAX_PER_RUN: "4"
+        run: node scripts/top-up-demo.js
+
+      - name: Verify the live catalogue stays populated
+        env:
+          API_URL: https://online-auction-system-rmnq.onrender.com
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 24); do
+            count=$(curl -sf --max-time 15 "$API_URL/api/items?status=active&limit=50" | jq '.data | length' 2>/dev/null || echo 0)
+            if [ "${count:-0}" -ge 3 ]; then
+              echo "API reports ${count} active auctions"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "API did not report enough active auctions" >&2
+          exit 1

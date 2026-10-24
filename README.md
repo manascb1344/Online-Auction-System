@@ -126,6 +126,10 @@ make test-all         # both engines
 
 The suite covers registration and duplicate handling, login failures, role enforcement, lot creation, filtering/search, bid increments, the outbid transition, closed-auction rejection, admin-only views, and the 404 envelope.
 
+## Hosted demo top-up
+
+`.github/workflows/demo-topup.yml` runs every 6 hours (and on manual dispatch) against the **hosted PostgreSQL demo only**. It never deletes rows: when fewer than four auctions are active it creates new lots as the seeded sellers, gives each a couple of bids from the seeded buyers, and leaves existing accounts, lots, and bids untouched. The script refuses non-public hosts and requires the repository secret `DEMO_DATABASE_URL`.
+
 ## Makefile
 
 | Command | Effect |
@@ -139,6 +143,7 @@ The suite covers registration and duplicate handling, login failures, role enfor
 | `make db-reset DB=mysql` | Drop and recreate the volume, reload schema + seed |
 | `make db-shell DB=postgres` | Open `psql`/`mysql` inside the database container |
 | `make test-mysql` / `make test-postgres` | Integration suite for one engine |
+| `ALLOW_DEMO_TOPUP=true DEMO_DATABASE_URL=… pnpm db:demo-topup` (in `server/`) | Add demo listings to the hosted database when active auctions run low |
 | `make logs` / `make ps` | Container logs / status |
 | `make clean` | Remove containers and volumes |
 
