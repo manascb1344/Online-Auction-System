@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
+    inputs:
+      min_active:
+        description: Minimum number of active auctions to maintain
+        required: false
+        default: "4"
 
 permissions:
   contents: read
@@ -31,7 +36,7 @@ jobs:
 
       - name: Install server dependencies
         working-directory: server
-        run: pnpm install --frozen-lockfile --prod
+        run: pnpm install --frozen-lockfile
 
       - name: Add demo listings when active auctions run low
         working-directory: server
@@ -41,7 +46,7 @@ jobs:
           DB_SSL: "true"
           DEMO_DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
           ALLOW_DEMO_TOPUP: "true"
-          DEMO_MIN_ACTIVE: "4"
+          DEMO_MIN_ACTIVE: ${{ github.event.inputs.min_active || '4' }}
           DEMO_MAX_PER_RUN: "4"
         run: node scripts/top-up-demo.js
 

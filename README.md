@@ -128,7 +128,7 @@ The suite covers registration and duplicate handling, login failures, role enfor
 
 ## Hosted demo top-up
 
-`.github/workflows/demo-topup.yml` runs every 6 hours (and on manual dispatch) against the **hosted PostgreSQL demo only**. It never deletes rows: when fewer than four auctions are active it creates new lots as the seeded sellers, gives each a couple of bids from the seeded buyers, and leaves existing accounts, lots, and bids untouched. The script refuses non-public hosts and requires the repository secret `DEMO_DATABASE_URL`.
+`.github/workflows/demo-topup.yml` runs every 6 hours (and on manual dispatch) against the **hosted PostgreSQL demo only**. It never deletes rows: when fewer than four auctions are active it creates new lots as the seeded sellers, gives each a couple of bids from the seeded buyers, and leaves existing accounts, lots, and bids untouched. Each lot's name, description, category, and price are generated with Faker, so there is no catalogue list to maintain; manual dispatch accepts a `min_active` input to raise the floor. The script refuses non-public hosts and requires the repository secret `DEMO_DATABASE_URL`.
 
 ## Makefile
 

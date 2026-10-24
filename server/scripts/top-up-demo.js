@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { faker } = require("@faker-js/faker");
 
 const MIN_ACTIVE = Number(process.env.DEMO_MIN_ACTIVE || 4);
 const MAX_PER_RUN = Number(process.env.DEMO_MAX_PER_RUN || 4);
@@ -43,16 +44,16 @@ const auth = require("../src/queries/auth");
 
 const SELLERS = ["seller1", "seller2", "seller3"];
 const BUYERS = ["buyer1", "buyer2", "buyer3", "buyer4"];
-const CATALOGUE = [
-  { name: "Vintage 50mm lens", description: "Clean glass, smooth focus ring, includes caps.", startingPrice: 75, category: "Photography" },
-  { name: "Hand-thrown ceramic vase", description: "Stoneware with a matte glaze, signed by the maker.", startingPrice: 40, category: "Home" },
-  { name: "Signed limited-edition print", description: "Numbered screen print, framed and ready to hang.", startingPrice: 60, category: "Art" },
-  { name: "75% mechanical keyboard kit", description: "Hot-swappable board with tactile switches and keycaps.", startingPrice: 55, category: "Electronics" },
-  { name: "Full-grain leather weekend bag", description: "Brass hardware, canvas lining, lightly used.", startingPrice: 90, category: "Fashion" },
-  { name: "First-edition novel (1968)", description: "Hardback with the original dust jacket.", startingPrice: 35, category: "Books" },
-  { name: "Compact analog synthesiser", description: "Serviced mono synth with MIDI and a carry case.", startingPrice: 150, category: "Music" },
-  { name: "Hand-carved wooden chess set", description: "Folding board with weighted pieces.", startingPrice: 45, category: "Games" },
-];
+
+function generateLot() {
+  return {
+    name: faker.commerce.productName(),
+    description: faker.commerce.productDescription(),
+    category: faker.commerce.department(),
+    startingPrice: Number(faker.commerce.price({ min: 20, max: 250, dec: 2 })),
+    durationDays: faker.number.int({ min: 3, max: 7 }),
+  };
+}
 
 async function loadDemoUsers() {
   const sellers = (await Promise.all(
@@ -86,21 +87,22 @@ async function main() {
   const created = [];
 
   for (let index = 0; index < toCreate; index += 1) {
-    const template = CATALOGUE[(before + index) % CATALOGUE.length];
+    const lot = generateLot();
     const itemId = crypto.randomUUID();
     const auctionId = crypto.randomUUID();
-    const seller = sellers[index % sellers.length];
+    const seller = faker.helpers.arrayElement(sellers);
+    const bidders = faker.helpers.arrayElements(buyers, Math.min(2, buyers.length));
     const startTime = new Date();
-    const endTime = new Date(Date.now() + (3 + index * 2) * 86400000);
+    const endTime = new Date(Date.now() + lot.durationDays * 86400000);
 
     await db.transaction(async (tx) => {
       await tx.query(items.insert, {
         id: itemId,
         sellerId: seller.id,
-        name: template.name,
-        description: template.description,
-        startingPrice: template.startingPrice,
-        category: template.category,
+        name: lot.name,
+        description: lot.description,
+        startingPrice: lot.startingPrice,
+        category: lot.category,
         imageUrl: null,
       });
       await tx.query(auctions.insert, {
@@ -109,30 +111,30 @@ async function main() {
         startTime,
         endTime,
         status: "active",
-        reservePrice: template.startingPrice,
+        reservePrice: lot.startingPrice,
       });
 
-      const firstBuyer = buyers[index % buyers.length];
       await tx.query(bids.insert, {
         id: crypto.randomUUID(),
         itemId,
-        bidderId: firstBuyer.id,
-        amount: template.startingPrice,
+        bidderId: bidders[0].id,
+        amount: lot.startingPrice,
       });
 
-      if (buyers.length > 1) {
-        const secondBuyer = buyers[(index + 1) % buyers.length];
+      if (bidders[1]) {
+        const increment = faker.number.int({ min: 1, max: 12 });
+        const secondAmount = Math.round((lot.startingPrice + increment) * 100) / 100;
         await tx.query(bids.markPreviousOutbid, { itemId });
         await tx.query(bids.insert, {
           id: crypto.randomUUID(),
           itemId,
-          bidderId: secondBuyer.id,
-          amount: template.startingPrice + 1,
+          bidderId: bidders[1].id,
+          amount: secondAmount,
         });
       }
     });
 
-    created.push(template.name);
+    created.push({ name: lot.name, category: lot.category, startingPrice: lot.startingPrice });
   }
 
   const after = Number((await db.one(auctions.countActive)).total);
