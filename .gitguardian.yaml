@@ -9,6 +9,3 @@ secret:
     - "SETUP.md"
     - "database/mysql/02_seed.sql"
     - "database/postgres/02_seed.sql"
-    - "client/src/pages/LoginPage.jsx"
-    - "render/docker-compose.yml"
-    - "server/index.js"
